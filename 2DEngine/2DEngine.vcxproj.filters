@@ -110,4 +110,9 @@
       <Filter>Game Development ===========\Tools\PuguiXML</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\Game\config.xml">
+      <Filter>Game Development ===========\Tools</Filter>
+    </Xml>
+  </ItemGroup>
 </Project>

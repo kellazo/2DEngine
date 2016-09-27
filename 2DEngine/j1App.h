@@ -91,6 +91,9 @@ private:
 	//for write directori through PhysFS using "pref dir" of SDL_GetPrefPath
 	p2SString			organization;
 	p2SString			applicationName;
+
+	pugi::xml_document	configuration;
+	pugi::xml_node		branch;
 	
 };
 
