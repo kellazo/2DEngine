@@ -18,6 +18,9 @@
     <Filter Include="Game Development ===========\Tools">
       <UniqueIdentifier>{28662778-2589-459e-8a6a-d36cf13a02e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game Development ===========\Tools\PuguiXML">
+      <UniqueIdentifier>{2289c127-efc8-4819-bb88-90b84ef1fbed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="j1Audio.cpp">
@@ -49,6 +52,9 @@
     </ClCompile>
     <ClCompile Include="j1Main.cpp">
       <Filter>Game Development ===========</Filter>
+    </ClCompile>
+    <ClCompile Include="PugiXml\src\pugixml.cpp">
+      <Filter>Game Development ===========\Tools\PuguiXML</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -96,6 +102,12 @@
     </ClInclude>
     <ClInclude Include="p2SString.h">
       <Filter>Programation 2 ==============</Filter>
+    </ClInclude>
+    <ClInclude Include="PugiXml\src\pugiconfig.hpp">
+      <Filter>Game Development ===========\Tools\PuguiXML</Filter>
+    </ClInclude>
+    <ClInclude Include="PugiXml\src\pugixml.hpp">
+      <Filter>Game Development ===========\Tools\PuguiXML</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -4,6 +4,9 @@
 #include "p2List.h"
 #include "j1Module.h"
 
+//parser data lib http://pugixml.org/docs/quickstart.html
+#include "PugiXml\src\pugixml.hpp"
+
 
 
 // Modules
