@@ -19,7 +19,7 @@ j1Audio::~j1Audio()
 }
 
 // Called before render is available
-bool j1Audio::Awake()
+bool j1Audio::Awake(pugi::xml_node& node)
 {
 	LOG("Loading Audio Mixer");
 	bool ret = true;
@@ -47,6 +47,11 @@ bool j1Audio::Awake()
 		LOG("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
 		ret = true;
 	}
+
+	bool music = PlayMusic(node.child("music").child_value());
+	unsigned int volume = Mix_VolumeMusic(node.child("music").attribute("volume").as_uint());
+	LOG("Volume was: %d \n", volume);
+	LOG("Volume is nom: %d \n", Mix_VolumeMusic(-1));
 
 	return ret;
 }

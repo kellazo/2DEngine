@@ -15,7 +15,7 @@
 j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 {
 	frames = 0;
-
+	
 	input = new j1Input();
 	win = new j1Window();
 	render = new j1Render();
@@ -23,7 +23,6 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	audio = new j1Audio();
 	scene = new j1Scene();
 	fs = new j1FileSystem(".");
-
 	// Ordered for awake / Start / Update
 	// Reverse order of CleanUp
 	AddModule(fs);
@@ -61,60 +60,66 @@ void j1App::AddModule(j1Module* module)
 // Called before render is available
 bool j1App::Awake()
 {
-	bool ret = true;
-	
+	bool ret = false;
 	//char* buffer;
 	//App->fs->Load("config.txt",&buffer); without RWops
 	//RELEASE(buffer);
 
 	//App->fs->Load("config.txt"); with RWops
 
-	//for write directori through PhysFS using "pref dir" of SDL_GetPrefPath using DEFINES var of P2Defs
-	organization.create(ORGANIZATION);
-	applicationName.create(APP);
 
 
 	/*-- - load config file-- -
 	Load "config.xml" file to a buffer, then send the data to
 	pugi using load_buffer() method. If everything goes well, load
 	the top tag inside the xml_node property created in the last TODO*/
-	
+	LOG("XML: Loading config file to buffer through PhysFS\n");
+	root = LoadConfigXml(document);
+	LOG("XML: Config file succsesfully loaded in buffer.\n");
 
-	char* buffer;
-	int size = App->fs->Load("config.xml",&buffer); 
-	
-
-	pugi::xml_parse_result result = document.load_buffer(buffer, size);
-
-	
-	if (result)
+	if (root.empty() == false)
 	{
-		LOG("XML %d parsed without errors, attr value:[ %d ]\n",result, document.child("node").attribute("attr").value());
+		//for write directori through PhysFS using "pref dir" of SDL_GetPrefPath using DEFINES var of P2Defs
+		//organization.create(ORGANIZATION);
+		//applicationName.create(APP);
+		//self-config also we can put data from xml file to program with xml functions to read:
+
+		ret = true;
+		appNode = root.child("app");
+		organization.create(appNode.child("organization").child_value());
+		applicationName.create((appNode.child("title").child_value()));
+		LOG("XML: Config.xml file parsed: Name of Organization: %s", organization.GetString());
+		LOG("XML: Config.xml file parsed: Name of Application: %s", applicationName.GetString());
+
 	}
-	else
+		//accessing data xml to read
+		//for (root = document.child("config"); root; root = root.next_sibling("config"))
+		//{
+		//	// %s for read strings in console
+		//	// read the name of title aplication
+		//	LOG("Nom: %s", root.child("name").text().as_string());
+
+		//}
+
+	if(ret == true)
 	{
-		LOG("XML %d parsed with errors, attr value:[ %d ]\n", result, document.child("node").attribute("attr").value());
-		LOG("ERROR description: %d \n", result.description());
-		LOG("ERROR offset: %d , (error at [.. %d ] \n",result.offset, result + result.offset);
+
+		p2List_item<j1Module*>* item;
+		item = modules.start;
+
+		while (item != NULL && ret == true)
+		{
+			// TODO 7: Add a new argument to the Awake method to receive a pointer to a xml node.
+			// If the section with the module name exist in config.xml, fill the pointer with the address of a valid xml_node
+			// that can be used to read all variables from that section. Send nullptr if the section does not exist in config.xml
+			LOG("App: Awakening module %s ...\n", item->data->name.GetString());
+			ret = item->data->Awake(root.child(item->data->name.GetString()));
+			LOG("App: ....finished Awake module %s \n", item->data->name.GetString());
+			item = item->next;
+			
+		}
 	}
-
-	RELEASE(buffer);
-
-	for (root = document.child("config"); root; root = root.next_sibling("config"))
-	{
-		LOG("Nom: %d",root.child("name").text());
-		LOG("Nom: %d", root.child_value("name"));
-	}
-
-	p2List_item<j1Module*>* item;
-	item = modules.start;
-
-	while(item != NULL && ret == true)
-	{
-		ret = item->data->Awake();
-		item = item->next;
-	}
-
+	LOG("App: Finish Awake() Function of all modules. \n");
 	return ret;
 }
 
@@ -153,6 +158,42 @@ bool j1App::Update()
 		ret = PostUpdate();
 
 	FinishUpdate();
+	return ret;
+}
+
+
+// ---------------------------------------------
+pugi::xml_node j1App::LoadConfigXml(pugi::xml_document& documentxml) const
+{
+	pugi::xml_node ret;
+
+
+	char* buffer;
+	int size = App->fs->Load("config.xml", &buffer);
+
+	//load xml in buffer for read
+	pugi::xml_parse_result result = documentxml.load_buffer(buffer, size);
+	//release memory xml
+	RELEASE(buffer);
+
+	if (result)
+	{
+		LOG("XML %d parsed without errors, attr value:[ %d]\n", result, document.child("node").attribute("attr").value());
+		//root = document.child("config");
+		//appNode = root.child("app");
+		//ret = true;
+		ret = documentxml.child("config");
+	}
+	else
+	{
+		LOG("XML %s parsed with errors, attr value:[ %d ]\n", result, document.child("node").attribute("attr").value());
+		LOG("ERROR description: %s \n", result.description());
+		LOG("ERROR offset: %d , (error at [.. %d ] \n", result.offset, result + result.offset);
+
+		
+	}
+
+
 	return ret;
 }
 
@@ -275,4 +316,12 @@ const char* j1App::GetOrganization() const
 	
 	return organization.GetString();
 }
+
+
+// to xml node to read
+//const pugi::xml_node j1App::xmlrootnode() const
+//{
+//
+//	return root;
+//}
 

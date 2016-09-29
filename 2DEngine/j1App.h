@@ -49,9 +49,17 @@ public:
 	//to read private var through public methods from other sites, for example writepath
 	const char* GetOrganization() const;
 	const char* GetApplicationName() const;
+
+
+	
+
+	//to get xml node root
+	//const pugi::xml_node xmlrootnode() const;
 	
 
 private:
+	// Load config file
+	pugi::xml_node LoadConfigXml(pugi::xml_document&) const;
 
 	// Call modules before each loop iteration
 	void PrepareUpdate();
@@ -91,6 +99,9 @@ private:
 	//for write directori through PhysFS using "pref dir" of SDL_GetPrefPath
 	p2SString			organization;
 	p2SString			applicationName;
+
+	// to read xml app node to put strings up to this fucntion read xml
+	pugi::xml_node		appNode;
 
 	// a xml_document to store the while config file and
 	// a xml_node to read specific branches of the xml

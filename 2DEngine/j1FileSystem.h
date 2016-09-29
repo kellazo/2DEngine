@@ -17,7 +17,7 @@ public:
 	virtual ~j1FileSystem();
 
 	// Called before render is available
-	bool Awake();
+	bool Awake(pugi::xml_node&);
 
 	// Open for Read/Write
 	unsigned int Load(const char* file, char** buffer) const;

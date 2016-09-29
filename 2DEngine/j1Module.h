@@ -7,6 +7,8 @@
 #define __j1MODULE_H__
 
 #include "p2SString.h"
+//necesary to read fucntions
+#include "PugiXml\src\pugixml.hpp"
 
 class j1App;
 
@@ -23,7 +25,8 @@ public:
 	}
 
 	// Called before render is available
-	virtual bool Awake()
+	// add xml pointer to node name to read configuration xml vars for all modules. Module render and module texture is obligated pass the argument, despite of nothing write in xml.
+	virtual bool Awake(pugi::xml_node&)
 	{
 		return true;
 	}

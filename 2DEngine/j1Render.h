@@ -15,7 +15,8 @@ public:
 	virtual ~j1Render();
 
 	// Called before render is available
-	bool Awake();
+	//this xml node is obligate to put this althoug not content nothing, but yes the node write in xml file, in this cas <renderer></renderer>
+	bool Awake(pugi::xml_node&);
 
 	// Called before the first frame
 	bool Start();

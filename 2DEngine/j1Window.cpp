@@ -19,7 +19,7 @@ j1Window::~j1Window()
 }
 
 // Called before render is available
-bool j1Window::Awake()
+bool j1Window::Awake(pugi::xml_node& node)
 {
 	LOG("Init SDL window & surface");
 	bool ret = true;
@@ -32,28 +32,30 @@ bool j1Window::Awake()
 	else
 	{
 		//Create window
-		title.create(WINDOW_TITLE);
-		Uint32 flags = SDL_WINDOW_SHOWN;
-		width = SCREEN_WIDTH;
-		height = SCREEN_HEIGHT;
-		scale = SCALE;
+		//title.create(WINDOW_TITLE);
 
-		if(R_FULLSCREEN == true)
+		//changing the program values to xml values
+		Uint32 flags = SDL_WINDOW_SHOWN;
+		width = node.child("resolution").attribute("width").as_uint();
+		height = node.child("resolution").attribute("height").as_uint();
+		scale = node.child("resolution").attribute("scale").as_uint();
+
+		if(node.child("fullscreen").attribute("value").as_bool() == true)
 		{
 			flags |= SDL_WINDOW_FULLSCREEN;
 		}
 
-		if(R_BORDERLESS == true)
+		if(node.child("borderless").attribute("value").as_bool() == true)
 		{
 			flags |= SDL_WINDOW_BORDERLESS;
 		}
 
-		if(R_RESIZABLE == true)
+		if(node.child("resizable").attribute("value").as_bool() == true)
 		{
 			flags |= SDL_WINDOW_RESIZABLE;
 		}
 
-		if(R_FULLSCR_WINDOWED == true)
+		if(node.child("fullscreen_window").attribute("value").as_bool() == true)
 		{
 			flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 		}
@@ -71,25 +73,20 @@ bool j1Window::Awake()
 			screen_surface = SDL_GetWindowSurface(window);
 
 			/*Read the title of the app from the XML
-		    and set directly the window title using SetTitle()*/
+			and set directly the window title using SetTitle()*/
+			//if we put public the app var of xml
+			//pugi::xml_node root = App->xmlrootnode();
+			//for (App->root = App->document.child("config"); App->root; App->root = App->root.next_sibling("config"))
+			//{
+			//	// %s for read strings in console
 
-			/*pugi::xml_document doc;
-
-			tool.child
-			for (pugi::xml_node )
-			{
-
-			}
-			
-			for (pugi::xml_node tool = tools.child("Tool"); tool; tool = tool.next_sibling("Tool"))
-			{
-				std::cout << "Tool " << tool.attribute("Filename").value();
-				std::cout << ": AllowRemote " << tool.attribute("AllowRemote").as_bool();
-				std::cout << ", Timeout " << tool.attribute("Timeout").as_int();
-				std::cout << ", Description '" << tool.child_value("Description") << "'\n";
-			}*/
-
-			//SetTitle(APPNAME);
+			//	LOG("Nom: %s", App->root.child("name").text().as_string());
+			//	SetTitle(App->root.child("name").text().as_string());
+			//}	
+			//SetTitle(APP);
+			//nodeconfig.name();
+			//if we use the awake argument from hereditage aplicattion app:
+			SetTitle(node.child("window_title").child_value());
 		}
 	}
 

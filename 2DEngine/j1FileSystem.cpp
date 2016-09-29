@@ -38,9 +38,9 @@ j1FileSystem::j1FileSystem(const char* game_path) : j1Module()
 	// TODO 2: Mount directory ".", then mount "data.zip"
 	// files in the folder should take precendence over the zip file!
 
-	const char* newDir = ".";
-	IsDir(newDir);
-	Mount(newDir);
+	//const char* newDir = ".";
+	IsDir(game_path);
+	Mount(game_path);
 	
 	const char* newDir2 = "data.zip";
 	Exist(newDir2);
@@ -60,7 +60,7 @@ j1FileSystem::~j1FileSystem()
 }
 
 // Called before render is available
-bool j1FileSystem::Awake()
+bool j1FileSystem::Awake(pugi::xml_node& node)
 {
 	LOG("Loading Physic File System");
 	bool ret = true;

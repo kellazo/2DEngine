@@ -16,7 +16,8 @@ public:
 	virtual ~j1Window();
 
 	// Called before render is available
-	bool Awake();
+	//this module will read data from xml config file cause we pass the argument of rootnode
+	bool Awake(pugi::xml_node&);
 
 	// Called before quitting
 	bool CleanUp();

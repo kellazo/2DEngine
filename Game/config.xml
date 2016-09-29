@@ -1,5 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <config>
-  <name>My super awesome game with XML</name>
+
+  <app>
+    <organization>UPC</organization>
+    <title>Motor 2D</title>
+  </app>
+  
+  <input>
+    
+  </input>
+
+  <window>
+    <window_title>My super title for window title</window_title>
+    <resolution width="1024" height="768" scale="1"/>
+    <fullscreen value="false"/>
+    <borderless value="false"/>
+    <resizable value="true"/>
+    <fullscreen_window value="false"/>
+  </window>
+  
+  <renderer>
+    
+  </renderer>
+
+  <texture>
+    
+  </texture>
+
+  <audio>
+    <music volume="5">game_test/audio/music/music_sadpiano.ogg</music>
+    
+  </audio>
+
+  <scene>
+    
+  </scene>
+
+  <file_system>
+    
+  </file_system>
+
+
 </config>
