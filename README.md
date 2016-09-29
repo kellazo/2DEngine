@@ -12,3 +12,7 @@ Changelog:
   - Base code.
   - PhysFs implemented.
   
+. Version 0.2
+  - XML pugi lybrary implemented
+  - Config file xml.
+  - You can read data from config file andchange the values.
