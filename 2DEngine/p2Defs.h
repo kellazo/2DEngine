@@ -70,5 +70,6 @@ inline const char* const PATH(const char* folder, const char* file)
 #define SCALE 1
 #define ORGANIZATION "UPC"
 #define APP "Motor2D"
+#define APPNAME "My super Game @Guiguimup"
 
 #endif

@@ -72,7 +72,39 @@ bool j1App::Awake()
 	//for write directori through PhysFS using "pref dir" of SDL_GetPrefPath using DEFINES var of P2Defs
 	organization.create(ORGANIZATION);
 	applicationName.create(APP);
+
+
+	/*-- - load config file-- -
+	Load "config.xml" file to a buffer, then send the data to
+	pugi using load_buffer() method. If everything goes well, load
+	the top tag inside the xml_node property created in the last TODO*/
 	
+
+	char* buffer;
+	int size = App->fs->Load("config.xml",&buffer); 
+	
+
+	pugi::xml_parse_result result = document.load_buffer(buffer, size);
+
+	
+	if (result)
+	{
+		LOG("XML %d parsed without errors, attr value:[ %d ]\n",result, document.child("node").attribute("attr").value());
+	}
+	else
+	{
+		LOG("XML %d parsed with errors, attr value:[ %d ]\n", result, document.child("node").attribute("attr").value());
+		LOG("ERROR description: %d \n", result.description());
+		LOG("ERROR offset: %d , (error at [.. %d ] \n",result.offset, result + result.offset);
+	}
+
+	RELEASE(buffer);
+
+	for (root = document.child("config"); root; root = root.next_sibling("config"))
+	{
+		LOG("Nom: %d",root.child("name").text());
+		LOG("Nom: %d", root.child_value("name"));
+	}
 
 	p2List_item<j1Module*>* item;
 	item = modules.start;

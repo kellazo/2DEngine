@@ -92,8 +92,10 @@ private:
 	p2SString			organization;
 	p2SString			applicationName;
 
-	pugi::xml_document	configuration;
-	pugi::xml_node		branch;
+	// a xml_document to store the while config file and
+	// a xml_node to read specific branches of the xml
+	pugi::xml_document	document;
+	pugi::xml_node		root;
 	
 };
 

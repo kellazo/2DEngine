@@ -69,6 +69,27 @@ bool j1Window::Awake()
 		{
 			//Get window surface
 			screen_surface = SDL_GetWindowSurface(window);
+
+			/*Read the title of the app from the XML
+		    and set directly the window title using SetTitle()*/
+
+			/*pugi::xml_document doc;
+
+			tool.child
+			for (pugi::xml_node )
+			{
+
+			}
+			
+			for (pugi::xml_node tool = tools.child("Tool"); tool; tool = tool.next_sibling("Tool"))
+			{
+				std::cout << "Tool " << tool.attribute("Filename").value();
+				std::cout << ": AllowRemote " << tool.attribute("AllowRemote").as_bool();
+				std::cout << ", Timeout " << tool.attribute("Timeout").as_int();
+				std::cout << ", Description '" << tool.child_value("Description") << "'\n";
+			}*/
+
+			//SetTitle(APPNAME);
 		}
 	}
 
