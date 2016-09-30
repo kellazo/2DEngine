@@ -205,6 +205,17 @@ void j1App::PrepareUpdate()
 // ---------------------------------------------
 void j1App::FinishUpdate()
 {
+	//This is a good place to call load / Save functions
+
+	if (want_to_save == true)
+	{
+		SavegameNow();
+	}
+	if (want_to_load == true)
+	{
+		LoadGameNow();
+	}
+	
 }
 
 // Call modules before each loop iteration
@@ -325,3 +336,24 @@ const char* j1App::GetOrganization() const
 //	return root;
 //}
 
+void j1App::Load()
+{
+
+}
+void j1App::Save() const
+{
+
+}
+
+bool j1App::LoadGameNow()
+{
+	Load();
+	return true;
+}
+bool j1App::SavegameNow() const
+{
+	Save();
+	return true;
+}
+
+//: Create a simulation of the xml file to read 

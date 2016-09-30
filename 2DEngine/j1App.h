@@ -55,6 +55,15 @@ public:
 
 	//to get xml node root
 	//const pugi::xml_node xmlrootnode() const;
+
+
+
+	// Create methods to save and load
+	// that can be called anytime, even if they 
+	// will one execute by the very end of the frame
+	// Load / Save
+	void Load();
+	void Save() const;
 	
 
 private:
@@ -75,6 +84,11 @@ private:
 
 	// Call modules after each loop iteration
 	bool PostUpdate();
+
+
+	// Load / Save state
+	bool LoadGameNow();
+	bool SavegameNow() const;
 
 public:
 
@@ -107,6 +121,12 @@ private:
 	// a xml_node to read specific branches of the xml
 	pugi::xml_document	document;
 	pugi::xml_node		root;
+
+	// for save and load game state
+	mutable bool		want_to_save;
+	bool				want_to_load;
+	p2SString			load_game;
+	mutable p2SString	save_game;
 	
 };
 

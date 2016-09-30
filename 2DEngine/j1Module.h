@@ -61,6 +61,17 @@ public:
 		return true;
 	}
 
+	//Create new virtual methods to Load and Save
+	virtual bool Load()
+	{
+		return true;
+	}
+
+	virtual bool Save() const
+	{
+		return true;
+	}
+
 public:
 
 	p2SString	name;
