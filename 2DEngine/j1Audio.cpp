@@ -49,9 +49,9 @@ bool j1Audio::Awake(pugi::xml_node& node)
 	}
 
 	bool music = PlayMusic(node.child("music").child_value());
-	unsigned int volume = Mix_VolumeMusic(node.child("music").attribute("volume").as_uint());
-	LOG("Volume was: %d \n", volume);
-	LOG("Volume is nom: %d \n", Mix_VolumeMusic(-1));
+	volume = Mix_VolumeMusic(node.child("music").attribute("volume").as_uint());
+	LOG("Volume default was: %d \n", volume);
+	LOG("Volume default is now: %d \n", volume = Mix_VolumeMusic(-1));
 
 	return ret;
 }
@@ -162,6 +162,49 @@ bool j1Audio::PlayFx(unsigned int id, int repeat)
 	{
 		Mix_PlayChannel(-1, fx[id - 1], repeat);
 	}
+
+	return ret;
+}
+
+//change volume
+bool j1Audio::ChangeVolume(unsigned int volumen)
+{
+	bool ret = false;
+
+	volume = Mix_VolumeMusic(volumen);
+	LOG("Volume was: %d \n", volumen);
+	LOG("Volume is now: %d \n", volume = Mix_VolumeMusic(-1));
+
+	return ret;
+}
+
+
+// TODO 6: Create a method to load the state
+// for now it will be camera's x and y
+bool j1Audio::LoadGame(pugi::xml_node& node)
+{
+	bool ret = true;
+
+	volume = node.child("volume").attribute("value").as_int();
+	LOG("XML read volume value: %d", volume);
+	
+
+	return ret;
+}
+
+//Create a method to save the state of the renderer”
+//Use append_child and append_attribute
+bool j1Audio::SaveGame(pugi::xml_node& node) const
+{
+	bool ret = true;
+
+	pugi::xml_node volumeNode;
+	//create node camera inside node renderer
+	volumeNode = node.append_child("volume");
+	//create attribute x  inside node camera with int value
+	volumeNode.append_attribute("value") = volume;
+	LOG("XML save volume value: %d", volume);
+
 
 	return ret;
 }

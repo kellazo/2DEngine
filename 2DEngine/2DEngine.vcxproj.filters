@@ -114,5 +114,8 @@
     <Xml Include="..\Game\config.xml">
       <Filter>Game Development ===========\Tools</Filter>
     </Xml>
+    <Xml Include="..\Game\GameStateTest.xml">
+      <Filter>Game Development ===========\Tools</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

@@ -1,5 +1,7 @@
 #include "p2Defs.h"
 #include "p2Log.h"
+//for stream
+#include <sstream>
 
 #include "j1Window.h"
 #include "j1Input.h"
@@ -178,7 +180,7 @@ pugi::xml_node j1App::LoadConfigXml(pugi::xml_document& documentxml) const
 
 	if (result)
 	{
-		LOG("XML %d parsed without errors, attr value:[ %d]\n", result, document.child("node").attribute("attr").value());
+		LOG("XML: Config.xml parsed without errors\n");
 		//root = document.child("config");
 		//appNode = root.child("app");
 		//ret = true;
@@ -186,11 +188,7 @@ pugi::xml_node j1App::LoadConfigXml(pugi::xml_document& documentxml) const
 	}
 	else
 	{
-		LOG("XML %s parsed with errors, attr value:[ %d ]\n", result, document.child("node").attribute("attr").value());
-		LOG("ERROR description: %s \n", result.description());
-		LOG("ERROR offset: %d , (error at [.. %d ] \n", result.offset, result + result.offset);
-
-		
+		LOG("XML Config.xml parsed with errors. Pugi Error : %s \n", result.description());
 	}
 
 
@@ -336,24 +334,133 @@ const char* j1App::GetOrganization() const
 //	return root;
 //}
 
-void j1App::Load()
+void j1App::LoadGame(const char* file)
 {
-
+	// we should be checking if that file actually exist
+	want_to_load = true;
+	//say physfs that read from /save virtual directory to load savegame file xml. Previusly you have to mount write directory and mount a virtual directory to read, that is it. 
+	load_game.create("%s%s", fs->GetSaveDirectory(), file);
+	//load_game.create(file);
 }
-void j1App::Save() const
+void j1App::SaveGame(const char* file) const
 {
-
+	// we should be checking if that file actually exist
+	// from the "GetSaveGames" list ... should we overwrite ?
+	want_to_save = true;
+	save_game.create(file);
 }
 
+
+//Create a method to actually load an xml file, then call all the modules to load
+//themselves”
 bool j1App::LoadGameNow()
 {
-	Load();
-	return true;
+	bool ret = false;
+
+	char* buffer;
+	int size = App->fs->Load(load_game.GetString(), &buffer);
+
+	//check if buffer there are something to read
+	if (size > 0)
+	{
+		pugi::xml_document data;
+		pugi::xml_node root;
+
+		//load xml in buffer for read
+		LOG("XML: Loading game in buffer via XML: %s...", load_game.GetString());
+		pugi::xml_parse_result result = data.load_buffer(buffer, size);
+		//release memory xml
+		RELEASE(buffer);
+
+		if (result)
+		{
+			LOG("XML: %s parsed without errors. Start Loading game state....\n", load_game.GetString());
+
+			root = data.child("game");
+			p2List_item<j1Module*>* item;
+			item = modules.start;
+			ret = true;
+
+			while (item != NULL && ret == true)
+			{
+				/*Iterate all modules and call their load method
+				As an argument send the xml section as with config file*/
+				LOG("App: Executing Load method from module %s ...\n", item->data->name.GetString());
+				ret = item->data->LoadGame(root.child(item->data->name.GetString()));
+				LOG("App: ....finished Load method from module %s \n", item->data->name.GetString());
+				item = item->next;
+
+			}
+			document.reset();
+
+			if (ret == true)
+				("XML:...finished loading game state.\n");
+			else
+				LOG("XML:...loading process interrupted with error on module %s", (item != NULL) ? item->data->name.GetString() : "unknown");
+		}
+		else
+		{
+			LOG("XML: %s parsed with errors. Pugi Error: %s \n", load_game.GetString(), result.description());
+			ret = false;
+
+		}
+	
+	}
+	else
+		LOG("XML: Could not load %s xml file.\n", load_game.GetString());
+		
+		
+	want_to_load = false;
+	return ret;
 }
+
+//Create a method to save the current state”
 bool j1App::SavegameNow() const
 {
-	Save();
-	return true;
+	
+	bool ret = true;
+	LOG("XML: Saving Game State to %s...", save_game.GetString());
+
+	pugi::xml_document data;
+	pugi::xml_node root;
+
+	root = data.append_child("game");
+
+	
+	p2List_item<j1Module*>* item;
+	item = modules.start;
+	ret = true;
+
+	while (item != NULL && ret == true)
+	{
+		/*Iterate all modules and call their save method
+		As an argument send the xml section as with config file*/
+		LOG("App: Executing Save method from module %s ...\n", item->data->name.GetString());
+		ret = item->data->SaveGame(root.append_child(item->data->name.GetString()));
+		LOG("App: ....finished Save method from module %s \n", item->data->name.GetString());
+		item = item->next;
+
+	}
+	if (ret == true)
+	{
+		// put all in memory using:
+		std::stringstream stream;
+		data.save(stream);
+
+		// we are done, so write data to disk
+
+		//fs->Save(save_game.GetString(), stream.str().c_str(), stream.str().length());
+		fs->BufferToFile(save_game.GetString(),stream.str().c_str(),stream.str().length());
+		LOG("PhysFS: ... finished saving game state xml", save_game.GetString());
+	}
+	else
+		LOG("XML: Save process halted from an error in module %s", (item != NULL) ? item->data->name.GetString() : "unknown");
+
+	data.reset();
+
+
+	want_to_save = false;
+	return ret;
 }
 
 //: Create a simulation of the xml file to read 

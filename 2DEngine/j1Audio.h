@@ -32,6 +32,16 @@ public:
 	// Play a previously loaded WAV
 	bool PlayFx(unsigned int fx, int repeat = 0);
 
+	//change volume with numeric keyboard
+	bool ChangeVolume(unsigned int volume);
+
+
+	// Load / Save
+	bool LoadGame(pugi::xml_node&);
+	bool SaveGame(pugi::xml_node&) const;
+
+	unsigned int volume;
+
 private:
 
 	_Mix_Music*			music_memory = NULL;

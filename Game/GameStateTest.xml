@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<game>
+
+  <renderer>
+  <camera x="50" y="30"></camera>
+  </renderer>
+  
+  
+  
+</game>

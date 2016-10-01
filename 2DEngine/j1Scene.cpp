@@ -31,6 +31,7 @@ bool j1Scene::Start()
 {
 	img = App->tex->Load("game_test/textures/test.png");
 	//App->audio->PlayMusic("game_test/audio/music/music_sadpiano.ogg");
+	volume = App->audio->volume;
 	return true;
 }
 
@@ -44,6 +45,44 @@ bool j1Scene::PreUpdate()
 // Called each loop iteration
 bool j1Scene::Update(float dt)
 {
+	/*Call load / save methods when pressing l / s”*/
+	if (App->input->GetKey(SDL_SCANCODE_L) == KEY_DOWN)
+	{
+		App->LoadGame("SaveGame.xml");
+		LOG("Scene: You are pressed L key(load game)");
+	}
+		
+
+	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN)
+	{
+		App->SaveGame("SaveGame.xml");
+		LOG("Scene: You are pressed S key(save game)");
+	}
+	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
+		App->render->camera.y -= 1;
+
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
+		App->render->camera.y += 1;
+
+	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
+		App->render->camera.x -= 1;
+
+	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
+		App->render->camera.x += 1;
+	
+	if (App->input->GetKey(SDL_SCANCODE_KP_MINUS) == KEY_DOWN)
+	{
+		App->audio->ChangeVolume(volume);
+		LOG("Scene: volume - pressed");
+		volume--;
+	}
+	if (App->input->GetKey(SDL_SCANCODE_KP_PLUS) == KEY_DOWN)
+	{
+		App->audio->ChangeVolume(volume);
+		LOG("Scene: volume + pressed");
+		volume++;
+	}
+	
 	App->render->Blit(img, 0, 0);
 	return true;
 }
@@ -53,7 +92,7 @@ bool j1Scene::PostUpdate()
 {
 	bool ret = true;
 
-	if(App->input->GetKeyDown(SDLK_ESCAPE) == true)
+	if (App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
 		ret = false;
 
 	return ret;

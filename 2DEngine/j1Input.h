@@ -3,9 +3,9 @@
 
 #include "j1Module.h"
 
-#define NUM_KEYS 352
+//#define NUM_KEYS 352
 #define NUM_MOUSE_BUTTONS 5
-#define LAST_KEYS_PRESSED_BUFFER 50
+//#define LAST_KEYS_PRESSED_BUFFER 50
 
 struct SDL_Rect;
 
@@ -19,10 +19,10 @@ enum j1EventWindow
 
 enum j1KeyState
 {
-	KS_IDLE = 0,
-	KS_DOWN,
-	KS_REPEAT,
-	KS_UP
+	KEY_IDLE = 0,
+	KEY_DOWN,
+	KEY_REPEAT,
+	KEY_UP
 };
 
 class j1Input : public j1Module
@@ -51,9 +51,15 @@ public:
 	bool GetWindowEvent(j1EventWindow ev);
 
 	// Check key states (includes mouse and joy buttons)
-	bool GetKeyDown(int code);
-	bool GetKeyRepeat(int code);
-	bool GetKeyUp(int code);
+	j1KeyState GetKey(int id) const
+	{
+		return keyboard[id];
+	}
+
+	j1KeyState GetMouseButtonDown(int id) const
+	{
+		return mouse_buttons[id - 1];
+	}
 
 	// Check if a certain window event happened
 	bool GetWindowEvent(int code);
@@ -62,16 +68,9 @@ public:
 	void GetMousePosition(int &x, int &y);
 	void GetMouseMotion(int& x, int& y);
 
-	bool GetMouseButtonDown(int code);
-	bool GetMouseButtonRepeat(int code);
-	bool GetMouseButtonUp(int code);
-
-private:
-	void CleanKeys();
-
 private:
 	bool		windowEvents[WE_COUNT];
-	j1KeyState	keyState[NUM_KEYS];
+	j1KeyState*	keyboard;
 	j1KeyState	mouse_buttons[NUM_MOUSE_BUTTONS];
 	int			mouse_motion_x;
 	int			mouse_motion_y;
