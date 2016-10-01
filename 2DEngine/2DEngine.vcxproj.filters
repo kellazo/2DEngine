@@ -56,6 +56,9 @@
     <ClCompile Include="PugiXml\src\pugixml.cpp">
       <Filter>Game Development ===========\Tools\PuguiXML</Filter>
     </ClCompile>
+    <ClCompile Include="j1Map.cpp">
+      <Filter>Game Development ===========\Modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="j1App.h">
@@ -108,6 +111,9 @@
     </ClInclude>
     <ClInclude Include="PugiXml\src\pugixml.hpp">
       <Filter>Game Development ===========\Tools\PuguiXML</Filter>
+    </ClInclude>
+    <ClInclude Include="j1Map.h">
+      <Filter>Game Development ===========\Modules</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

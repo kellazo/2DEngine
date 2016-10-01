@@ -10,6 +10,7 @@
 #include "j1Audio.h"
 #include "j1Scene.h"
 #include "j1FileSystem.h"
+#include "j1Map.h"
 
 #include "j1App.h"
 
@@ -25,6 +26,7 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	audio = new j1Audio();
 	scene = new j1Scene();
 	fs = new j1FileSystem(".");
+	map = new j1Map();
 	// Ordered for awake / Start / Update
 	// Reverse order of CleanUp
 	AddModule(fs);
@@ -32,6 +34,7 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(win);
 	AddModule(tex);
 	AddModule(audio);
+	AddModule(map);
 	AddModule(scene);
 
 	// render last to swap buffer
@@ -188,7 +191,7 @@ pugi::xml_node j1App::LoadConfigXml(pugi::xml_document& documentxml) const
 	}
 	else
 	{
-		LOG("XML Config.xml parsed with errors. Pugi Error : %s \n", result.description());
+		LOG("XML: Config.xml parsed with errors. Pugi Error : %s \n", result.description());
 	}
 
 
@@ -394,7 +397,7 @@ bool j1App::LoadGameNow()
 			document.reset();
 
 			if (ret == true)
-				("XML:...finished loading game state.\n");
+				LOG("XML:...finished loading game state.\n");
 			else
 				LOG("XML:...loading process interrupted with error on module %s", (item != NULL) ? item->data->name.GetString() : "unknown");
 		}

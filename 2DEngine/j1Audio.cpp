@@ -172,7 +172,7 @@ bool j1Audio::ChangeVolume(unsigned int volumen)
 	bool ret = false;
 
 	volume = Mix_VolumeMusic(volumen);
-	LOG("Volume was: %d \n", volumen);
+	LOG("Volume was: %d \n", volume);
 	LOG("Volume is now: %d \n", volume = Mix_VolumeMusic(-1));
 
 	return ret;
@@ -184,9 +184,11 @@ bool j1Audio::ChangeVolume(unsigned int volumen)
 bool j1Audio::LoadGame(pugi::xml_node& node)
 {
 	bool ret = true;
+	
 
 	volume = node.child("volume").attribute("value").as_int();
-	LOG("XML read volume value: %d", volume);
+	Mix_VolumeMusic(volume);
+	LOG("XML read volume value: %d", volume = Mix_VolumeMusic(-1));
 	
 
 	return ret;

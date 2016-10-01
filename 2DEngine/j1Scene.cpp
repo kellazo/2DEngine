@@ -6,7 +6,9 @@
 #include "j1Audio.h"
 #include "j1Render.h"
 #include "j1Window.h"
+#include "j1Map.h"
 #include "j1Scene.h"
+
 
 j1Scene::j1Scene() : j1Module()
 {
@@ -50,6 +52,8 @@ bool j1Scene::Update(float dt)
 	{
 		App->LoadGame("SaveGame.xml");
 		LOG("Scene: You are pressed L key(load game)");
+		
+		
 	}
 		
 
@@ -72,18 +76,19 @@ bool j1Scene::Update(float dt)
 	
 	if (App->input->GetKey(SDL_SCANCODE_KP_MINUS) == KEY_DOWN)
 	{
-		App->audio->ChangeVolume(volume);
+		volume == App->audio->ChangeVolume(volume);
 		LOG("Scene: volume - pressed");
 		volume--;
 	}
 	if (App->input->GetKey(SDL_SCANCODE_KP_PLUS) == KEY_DOWN)
 	{
-		App->audio->ChangeVolume(volume);
+		volume == App->audio->ChangeVolume(volume);
 		LOG("Scene: volume + pressed");
 		volume++;
 	}
+	//App->map->Draw();
+	//App->render->Blit(img, 0, 0);
 	
-	App->render->Blit(img, 0, 0);
 	return true;
 }
 

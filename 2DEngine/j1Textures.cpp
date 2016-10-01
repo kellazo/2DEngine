@@ -66,16 +66,18 @@ SDL_Texture* const j1Textures::Load(const char* path)
 	// TODO 5: Instead of reading directly from HD, use our new load methods from filesystem module
 	// You will need to use IMG_Load_RW() instead, 1 means will aotumatically close/free the src for you
 	//SDL_Surface* surface = IMG_Load(path);
+	LOG("Physfs: Loading new texture...: %s.", path);
 	SDL_Surface* surface = IMG_Load_RW(App->fs->Load(path),1);
-	LOG("Loading new texture from memory through PhysFS path with RWops throug IMG_LOAD_RW: %s.", path);
-
+	LOG("Physfs: Finish Loaded new texture: %s.", path);
 	if(surface == NULL)
 	{
 		LOG("Could not load surface with path: %s. IMG_Load: %s", path, IMG_GetError());
 	}
 	else
 	{
+		
 		texture = LoadSurface(surface);
+		LOG("Succsesfully texture loaded: %s.", path);
 		SDL_FreeSurface(surface);
 	}
 
