@@ -34,6 +34,7 @@ bool j1Scene::Start()
 	img = App->tex->Load("game_test/textures/test.png");
 	//App->audio->PlayMusic("game_test/audio/music/music_sadpiano.ogg");
 	volume = App->audio->volume;
+	App->map->Load("hello.tmx");
 	return true;
 }
 
@@ -86,8 +87,8 @@ bool j1Scene::Update(float dt)
 		LOG("Scene: volume + pressed");
 		volume++;
 	}
-	//App->map->Draw();
-	//App->render->Blit(img, 0, 0);
+	App->map->Draw();
+	App->render->Blit(img, 300, 0);
 	
 	return true;
 }

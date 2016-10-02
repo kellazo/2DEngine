@@ -23,7 +23,7 @@ bool j1Map::Awake(pugi::xml_node& config)
 	bool ret = true;
 	// see node map, inside map there are a node that his name is folder, so put in folder var the text there are between folder node that is (maps/)
 	folder.create(config.child("folder").child_value());
-	Load("hello.tmx");
+	//Load("hello.tmx");
 	return ret;
 }
 
@@ -49,17 +49,10 @@ void j1Map::Draw()
 		for (int y = 0; y < MapData.height; y++)
 		{
 			for (int x = 0; x < MapData.width; x++)
-			{
-
-				
-				
+			{			
 				App->render->Blit(tileset->data->texture, 0, 0);
-				
 			}
 		}
-
-
-
 		tileset = tileset->next;
 	}
 
@@ -74,7 +67,7 @@ bool j1Map::CleanUp()
 {
 	LOG("Unloading map");
 
-	// TODO 2: Make sure you clean up any memory allocated
+	// Make sure you clean up any memory allocated
 	// from tilesets / map
 	//MapData.~Map();
 	//TilesetData.~TileSet();
@@ -90,7 +83,7 @@ bool j1Map::CleanUp()
 	}
 	MapData.tilesets.clear();*/
 
-
+	// Clean up the pugui tree
 	map_file.reset();
 
 	return true;
