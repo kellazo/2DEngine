@@ -86,7 +86,7 @@ bool j1Window::Awake(pugi::xml_node& node)
 			//SetTitle(APP);
 			//nodeconfig.name();
 			//if we use the awake argument from hereditage aplicattion app:
-			SetTitle(node.child("window_title").child_value());
+			//SetTitle(node.child("window_title").child_value());
 		}
 	}
 

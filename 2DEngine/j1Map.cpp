@@ -34,17 +34,19 @@ void j1Map::Draw()
 	// Iterate all tilesets and draw all their 
 	// images in 0,0 (you should have only one tileset for now)
 
+	// accedim a la info a traves d'un punter que apunta a la informacio, cada vegada
+	//TileSet* TileData = tile->data;
+
+	//aqui pintem el tileset a la posicio 0,0
+	//App->render->Blit(TileData->texture, 0, 0);
+
+	//un cop hem mostrat la primera tile, passem a la seguent i anem iterant
+
+	//si volem iterar tots els tilesets ho hem de fer a traves de la llsita de punters.
 	p2List_item<TileSet*>* tileset = MapData.tilesets.start;
 	while (tileset != NULL)
 	{
-		// accedim a la info a traves d'un punter que apunta a la informacio, cada vegada
-		//TileSet* TileData = tile->data;
-
-		//aqui pintem el tileset a la posicio 0,0
-		//App->render->Blit(TileData->texture, 0, 0);
-
-		//un cop hem mostrat la primera tile, passem a la seguent i anem iterant
-		//App->render->Blit(tileset->data->texture, 0, 0);
+	
 
 		for (int y = 0; y < MapData.height; y++)
 		{
@@ -73,7 +75,7 @@ bool j1Map::CleanUp()
 	//TilesetData.~TileSet();
 
 	// Remove all tilesets
-	/*p2List_item<TileSet*>* tile;
+	p2List_item<TileSet*>* tile;
 	tile = MapData.tilesets.start;
 
 	while (tile != NULL)
@@ -81,7 +83,7 @@ bool j1Map::CleanUp()
 		RELEASE(tile->data);
 		tile = tile->next;
 	}
-	MapData.tilesets.clear();*/
+	MapData.tilesets.clear();
 
 	// Clean up the pugui tree
 	map_file.reset();
@@ -315,7 +317,7 @@ bool j1Map::LoadTilesetData(pugi::xml_node& tileset_node, TileSet* set)
 	//TilesetData.tilecount = tileset.attribute("tilecount").as_uint();
 
 	//Finalment afegim la info a la llista que tenim a map, d'aquesta manera tindrem un punter i podrem accediri.
-	MapData.tilesets.add(set);
+	//MapData.tilesets.add(set);
 
 	LOG("TMX: Finish loading tileset data tag....\n");
 

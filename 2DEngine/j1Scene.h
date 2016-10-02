@@ -33,6 +33,7 @@ public:
 	bool CleanUp();
 
 	unsigned int volume;
+	p2SString MapInfo;
 private:
 	SDL_Texture* img;
 };

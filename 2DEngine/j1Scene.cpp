@@ -48,6 +48,7 @@ bool j1Scene::PreUpdate()
 // Called each loop iteration
 bool j1Scene::Update(float dt)
 {
+
 	/*Call load / save methods when pressing l / s”*/
 	if (App->input->GetKey(SDL_SCANCODE_L) == KEY_DOWN)
 	{
@@ -88,7 +89,11 @@ bool j1Scene::Update(float dt)
 		volume++;
 	}
 	App->map->Draw();
+
 	App->render->Blit(img, 300, 0);
+	
+	MapInfo.create("Map: %d x %d Tiles: %d x %d Tilesets: %d", App->map->MapData.width, App->map->MapData.height, App->map->MapData.tilewidth, App->map->MapData.tileheight, App->map->MapData.tilesets.count());
+	App->win->SetTitle(MapInfo.GetString());
 	
 	return true;
 }
