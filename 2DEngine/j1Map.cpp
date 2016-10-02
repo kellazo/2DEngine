@@ -7,6 +7,7 @@
 #include "j1Map.h"
 #include <math.h>
 
+
 j1Map::j1Map() : j1Module(), map_loaded(false)
 {
 	name.create("map");
@@ -23,7 +24,6 @@ bool j1Map::Awake(pugi::xml_node& config)
 	bool ret = true;
 	// see node map, inside map there are a node that his name is folder, so put in folder var the text there are between folder node that is (maps/)
 	folder.create(config.child("folder").child_value());
-	//Load("hello.tmx");
 	return ret;
 }
 
@@ -71,8 +71,6 @@ bool j1Map::CleanUp()
 
 	// Make sure you clean up any memory allocated
 	// from tilesets / map
-	//MapData.~Map();
-	//TilesetData.~TileSet();
 
 	// Remove all tilesets
 	p2List_item<TileSet*>* tile;
@@ -84,6 +82,16 @@ bool j1Map::CleanUp()
 		tile = tile->next;
 	}
 	MapData.tilesets.clear();
+	// Remove all layers
+	p2List_item<Layer*>* layer;
+	layer = MapData.layers.start;
+
+	while (layer != NULL)
+	{
+		RELEASE(layer->data);
+		layer = layer->next;
+	}
+	MapData.layers.clear();
 
 	// Clean up the pugui tree
 	map_file.reset();
@@ -133,6 +141,12 @@ bool j1Map::Load(const char* file_name)
 			ret = LoadTileset();
 			LOG("TMX:...finished loading tileset information.\n");
 		}
+		if (ret == true)
+		{
+			LOG("TMX: Starting loading Layer information....\n");
+			ret = LoadLayer();
+			LOG("TMX:...finished loading Layer information.\n");
+		}
 		
 
 		// TODO 5: LOG all the data loaded
@@ -145,7 +159,7 @@ bool j1Map::Load(const char* file_name)
 			LOG("Orientation: %s map (%d).",orientation.GetString(), MapData.mapOrientaton);
 			LOG("Render orderer: %s map (%d).", renderorder.GetString(), MapData.mapOrderer);
 			LOG("Size of each tile: Width: %d of a tile Height: %d of a tile.", MapData.tilewidth, MapData.tileheight);
-			LOG("Tilesets --------------");
+			LOG("Tilesets ---------------------");
 
 
 			//Aqui iterem la llista de tilesets per que poguem llegir totes les tiles
@@ -171,6 +185,19 @@ bool j1Map::Load(const char* file_name)
 			LOG("Height: %d (The(maximum) height of the tiles in this tileset.)", TilesetData.tileheight);
 			LOG("Total tiles in this tileset %d", TilesetData.tilecount);
 			LOG("Spacing: %d Margin: %d", TilesetData.spacing, TilesetData.margin);*/
+			LOG("Layers -----------------------");
+			p2List_item<Layer*>* layer = MapData.layers.start;
+			while (layer != NULL)
+			{
+				
+				Layer* layerData = layer->data;
+				LOG("Layer ----");
+				LOG("Name: %s ", layerData->name.GetString());
+
+			
+				layer = layer->next;
+			}
+
 		}
 	}
 	else
@@ -361,5 +388,137 @@ bool j1Map::LoadTilesetImage(pugi::xml_node& tileset_node, TileSet* set)
 		set->num_tiles_height = set->tex_height / set->tileheight;
 	}
 	LOG("TMX: Finish loading image data tag....\n");
+	return ret;
+}
+
+bool j1Map::LoadLayer()
+{
+	bool ret = true;
+
+	for (pugi::xml_node layer = map_file.child("map").child("layer"); layer; layer = layer.next_sibling("layer"))
+	{
+		Layer* set = new Layer();
+
+		if (ret == true)
+		{
+			ret = LoadLayerInfo(layer, set);
+		}
+
+		if (ret == true)
+		{
+			ret = LoadLayerData(layer, set);
+		}
+		
+		MapData.layers.add(set);
+	}
+
+	return ret;
+}
+
+bool j1Map::LoadLayerInfo(pugi::xml_node& layer_node, Layer* set)
+{
+	bool ret = true;
+	LOG("TMX: Starting loading layer data tag....\n");
+
+	set->name.create(layer_node.attribute("name").as_string());
+	set->visible = layer_node.attribute("visible").as_bool();
+	set->opacity = layer_node.attribute("opacity").as_bool();
+	set->offsetx = layer_node.attribute("offsetx").as_uint();
+	set->offsety = layer_node.attribute("offsety").as_uint();
+
+
+	LOG("TMX: Finish loading layer data tag....\n");
+	return ret;
+}
+
+bool j1Map::LoadLayerData(pugi::xml_node& layer_node, Layer* set)
+{
+	bool ret = true;
+	LOG("TMX: Starting loading data tag inside node layer....\n");
+
+	pugi::xml_node data = layer_node.child("data");
+
+	if (data == NULL)
+	{
+		LOG("Pugi: Error parsing map tmx file: Cannot find 'data' node.");
+		ret = false;
+	}
+	else
+	{
+	//encoding: The encoding used to encode the tile layer data.When used, it can be "base64" and "csv" at the moment.
+
+		p2SString type_encoding;
+		type_encoding.create("%s",data.attribute("encoding").as_string());
+
+		/*What will be the size of that array ? … how many do you have in the TMX
+		file ?*/
+		
+
+		if (type_encoding == "csv")
+		{
+			uint size = MapData.width*MapData.height;
+
+			set->datainfo = new uint[size];
+
+			//Once the array is allocated, use memset to fill it with zeroes
+			memset(set->datainfo, 0, size);
+			
+			// to read content
+			const char* string = data.text().get();
+			//p2SString sizet;
+			//sizet.create(string);
+			//p2SString size_string;
+			//size_string.create(string);
+			//to separate words by tokens, function atoi is for pas char to int
+			char* token = NULL;
+			char* next_token = NULL;
+			char  delims[] = " ,\t\n";
+
+			token = strtok_s((char*)string, delims, &next_token);
+			int i = 0;
+			
+		
+			while (token != NULL)
+			{
+				for (i; i < size; i++)
+				{
+					if (token != NULL)
+					{
+						token = strtok_s(NULL, delims, &next_token);
+						//set->datainfo[i] = atoi(token);
+						
+					}
+
+					
+				}
+				
+				
+			}
+			
+			ret = true;
+
+		}
+
+		else if (type_encoding == "base64")
+		{
+			
+			ret = true;
+		}
+		else if (type_encoding == "undefined")
+		{
+			int i = 0;
+			for (data; data; data = data.next_sibling("data"))
+			{
+				set->datainfo[i++] = data.attribute("gid").as_int(0);
+			}
+			ret = true;
+		}
+		else
+			ret = false;
+
+
+	}
+
+	LOG("TMX: Finish loading data tag inside node layer....\n");
 	return ret;
 }

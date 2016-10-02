@@ -4,7 +4,42 @@
 #include "PugiXml/src/pugixml.hpp"
 #include "p2List.h"
 #include "p2Point.h"
+#include "p2DynArray.h"
 #include "j1Module.h"
+
+
+
+
+struct Layer
+{
+	/*name: The name of the layer.
+	opacity : The opacity of the layer as a value from 0 to 1. Defaults to 1.
+	visible : Whether the layer is shown(1) or hidden(0).Defaults to 1.
+	offsetx : Rendering offset for this layer in pixels.Defaults to 0. (since 0.14)
+	offsety : Rendering offset for this layer in pixels.Defaults to 0. (since 0.14)
+	Can contain : properties, data*/
+
+	p2SString name;
+	bool opacity;
+	bool visible;
+	uint offsetx;
+	uint offsety;
+	//For the core of the data, just use pointer to unsigned int for now
+	uint* datainfo;
+	
+	//OPTION: to delete the memory for tile data, you could use a destructor in
+	//the layer struct
+	Layer() : datainfo(NULL)
+	{}
+
+	~Layer()
+	{
+		RELEASE(datainfo);
+	}
+
+
+};
+
 
 
 //primer va la estructura de Tileset abans que la de Mapdata pk farem una llista.
@@ -101,6 +136,9 @@ struct Map
 
 	//com que podem carregar mes dun tileset en el TMX i necesitem agafar la info que contenem. fem una llista de punters a l'estrucutra Tileset que conte tota la info parsejada
 	p2List<TileSet*>	tilesets;
+	//el amteix amb les layers
+	//make sure all memory is deleted
+	p2List<Layer*>	layers;
 
 	//~Map() {} //destructor
 };
@@ -137,6 +175,10 @@ private:
 	bool LoadTilesetData(pugi::xml_node& tileset_node, TileSet* set);
 	//fill all tileset information image tag
 	bool LoadTilesetImage(pugi::xml_node& tileset_node, TileSet* set);
+
+	bool LoadLayer();
+	bool LoadLayerInfo(pugi::xml_node& layer_node, Layer* set);
+	bool LoadLayerData(pugi::xml_node& layer_node, Layer* set);
 	
 
 
