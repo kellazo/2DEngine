@@ -162,7 +162,7 @@ bool j1Map::Load(const char* file_name)
 		}
 		
 
-		// TODO 5: LOG all the data loaded
+		//  LOG all the data loaded
 		// iterate all tilesets and LOG everything
 		if (ret == true)
 		{
@@ -550,13 +550,24 @@ bool j1Map::LoadLayerData(pugi::xml_node& layer_node, Layer* set)
 SDL_Rect TileSet::GetTileRect(int id) const
 {
 	SDL_Rect position;
-
+	int relative_id = id - firstgid;
 	position.x;
 	position.y;
-	position.h;
-	position.w;
+	position.h = tex_height;
+	position.w = tex_width;
 
-	TileSet pos;
+	
 
 	return position;
+}
+
+iPoint j1Map::MapToWorld(int x, int y) const
+{
+	
+	iPoint worldPoint;
+
+	worldPoint.x = x;
+	worldPoint.y = y;
+
+	return worldPoint;;
 }
