@@ -461,7 +461,7 @@ bool j1Map::LoadLayerData(pugi::xml_node& layer_node, Layer* set)
 			set->datainfo = new uint[size];
 
 			//Once the array is allocated, use memset to fill it with zeroes
-			memset(set->datainfo, 0, size);
+			memset(set->datainfo, 0, 4);
 			
 			// to read content
 			const char* string = data.text().get();
@@ -480,19 +480,25 @@ bool j1Map::LoadLayerData(pugi::xml_node& layer_node, Layer* set)
 		
 			while (token != NULL)
 			{
-				for (i; i < size; i++)
+
+				if (token != NULL)
 				{
-					if (token != NULL)
+					
+
+					for (i; i < size; i++)
 					{
 						token = strtok_s(NULL, delims, &next_token);
-						//set->datainfo[i] = atoi(token);
-						
+						if (token)
+						{
+							set->datainfo[i] = atoi(token);
+							//LOG("%d", set->datainfo[i]);
+						}
+						else
+							LOG("Token is null");
 					}
-
-					
 				}
-				
-				
+				else
+					LOG("ERROR with token");
 			}
 			
 			ret = true;
