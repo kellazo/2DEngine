@@ -31,12 +31,13 @@ void j1Map::Draw()
 {
 	if (map_loaded == false)
 		return;
+	
 	// Iterate all tilesets and draw all their 
 	// images in 0,0 (you should have only one tileset for now)
 
 	// accedim a la info a traves d'un punter que apunta a la informacio, cada vegada
 	//TileSet* TileData = tile->data;
-
+	
 	//aqui pintem el tileset a la posicio 0,0
 	//App->render->Blit(TileData->texture, 0, 0);
 
@@ -44,15 +45,27 @@ void j1Map::Draw()
 
 	//si volem iterar tots els tilesets ho hem de fer a traves de la llsita de punters.
 	p2List_item<TileSet*>* tileset = MapData.tilesets.start;
+
+	//***????? punter a layer que apunta a la primera direccio de memoria de la llista de layers amb la info
+	Layer* layer = MapData.layers.start->data;
+		
+
+	uint coordenate;
 	while (tileset != NULL)
 	{
 	
-
+		
 		for (int y = 0; y < MapData.height; y++)
 		{
 			for (int x = 0; x < MapData.width; x++)
-			{			
-				App->render->Blit(tileset->data->texture, 0, 0);
+			{
+				coordenate = layer->Get(x, y);
+				//be sure to ignore tiles of id == 0
+				if (coordenate > 0)
+				{
+					App->render->Blit(tileset->data->texture, 0, 0);
+				}
+				
 			}
 		}
 		tileset = tileset->next;
@@ -170,7 +183,6 @@ bool j1Map::Load(const char* file_name)
 				TileSet* TileData = tile->data;
 				LOG("Tileset ----");
 				LOG("Name: %s. Firstgid: %d", TileData->name.GetString(), TileData->firstgid);
-
 				LOG("Width: %d (The(maximum) width of the tiles in this tileset.)", TileData->tilewidth);
 				LOG("Height: %d (The(maximum) height of the tiles in this tileset.)", TileData->tileheight);
 				LOG("Total tiles in this tileset %d", TileData->tilecount);
@@ -197,7 +209,8 @@ bool j1Map::Load(const char* file_name)
 				LOG("Visible: %d", layerData->visible);
 				LOG("Offset X: %d", layerData->offsetx);
 				LOG("Offset Y: %d", layerData->offsety);
-			
+				LOG("Width: %d", layerData->width);
+				LOG("Height: %d", layerData->height);
 				layer = layer->next;
 			}
 
@@ -428,6 +441,8 @@ bool j1Map::LoadLayerInfo(pugi::xml_node& layer_node, Layer* set)
 	set->opacity = layer_node.attribute("opacity").as_float();
 	set->offsetx = layer_node.attribute("offsetx").as_uint();
 	set->offsety = layer_node.attribute("offsety").as_uint();
+	set->width = layer_node.attribute("width").as_uint();
+	set->height = layer_node.attribute("height").as_uint();
 
 
 	LOG("TMX: Finish loading layer data tag....\n");
@@ -530,4 +545,18 @@ bool j1Map::LoadLayerData(pugi::xml_node& layer_node, Layer* set)
 
 	LOG("TMX: Finish loading data tag inside node layer....\n");
 	return ret;
+}
+
+SDL_Rect TileSet::GetTileRect(int id) const
+{
+	SDL_Rect position;
+
+	position.x;
+	position.y;
+	position.h;
+	position.w;
+
+	TileSet pos;
+
+	return position;
 }

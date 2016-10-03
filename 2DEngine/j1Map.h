@@ -26,7 +26,19 @@ struct Layer
 	uint offsety;
 	//For the core of the data, just use pointer to unsigned int for now
 	uint* datainfo;
+
+	uint width;
+	uint height;
 	
+	//Inside struct for the layer, create a short method to get the value of x, y
+	inline uint Get(int tilex, int tiley) const
+	{
+		uint coordenate = datainfo[tilex + (tiley*height)];
+
+		return coordenate;
+	}
+
+
 	//OPTION: to delete the memory for tile data, you could use a destructor in
 	//the layer struct
 	Layer() : datainfo(NULL)
@@ -47,6 +59,8 @@ struct Layer
 // Ignore Terrain Types and Tile Types for now, but we want the image!
 struct TileSet
 {
+	//Create a method that receives a tile id and returns it's Rectfind the Rect associated with a specific tile id
+	SDL_Rect GetTileRect(int id) const;
 
 	/*firstgid: The first global tile ID of this tileset(this global ID maps to the first tile in this tileset).
 	source : If this tileset is stored in an external TSX(Tile Set XML) file, this attribute refers to that file.That TSX file has the same structure as the <tileset> element described here. (There is the firstgid attribute missing and this source attribute is also not there.These two attributes are kept in the TMX map, since they are map specific.)
