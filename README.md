@@ -21,3 +21,8 @@ Changelog:
 - You can load adn read xml files(config.xml)
 - You can save game state and load state
 - Add ChangeVolume feature. Try to cahnge with key + and key - to change volume and save state with key "s". Then load the state pressing "l".
+
+. Version 0.4
+- You can load and read tmx files. From Tiled.
+- Load All layers as encode csv as simple xml and Tilesets.
+
