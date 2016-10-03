@@ -193,7 +193,10 @@ bool j1Map::Load(const char* file_name)
 				Layer* layerData = layer->data;
 				LOG("Layer ----");
 				LOG("Name: %s ", layerData->name.GetString());
-
+				LOG("Opacity: %f", layerData->opacity);
+				LOG("Visible: %d", layerData->visible);
+				LOG("Offset X: %d", layerData->offsetx);
+				LOG("Offset Y: %d", layerData->offsety);
 			
 				layer = layer->next;
 			}
@@ -422,7 +425,7 @@ bool j1Map::LoadLayerInfo(pugi::xml_node& layer_node, Layer* set)
 
 	set->name.create(layer_node.attribute("name").as_string());
 	set->visible = layer_node.attribute("visible").as_bool();
-	set->opacity = layer_node.attribute("opacity").as_bool();
+	set->opacity = layer_node.attribute("opacity").as_float();
 	set->offsetx = layer_node.attribute("offsetx").as_uint();
 	set->offsety = layer_node.attribute("offsety").as_uint();
 

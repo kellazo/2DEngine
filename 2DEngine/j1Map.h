@@ -20,7 +20,7 @@ struct Layer
 	Can contain : properties, data*/
 
 	p2SString name;
-	bool opacity;
+	float opacity;
 	bool visible;
 	uint offsetx;
 	uint offsety;
