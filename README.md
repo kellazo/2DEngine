@@ -26,3 +26,6 @@ Changelog:
 - You can load and read tmx files. From Tiled.
 - Load All layers as encode csv as simple xml and Tilesets.
 
+. Version 0.5
+- You can create orthogonal maps with Tiled software and can load into the engine. Just open config.xml and change the name hello.tmx for your map name.
+
