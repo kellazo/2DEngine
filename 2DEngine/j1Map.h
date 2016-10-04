@@ -33,7 +33,7 @@ struct Layer
 	//Inside struct for the layer, create a short method to get the value of x, y
 	inline uint Get(int tilex, int tiley) const
 	{
-		uint coordenate = datainfo[tilex + (tiley*height)];
+		uint coordenate = datainfo[tilex + (tiley*width)];
 
 		return coordenate;
 	}

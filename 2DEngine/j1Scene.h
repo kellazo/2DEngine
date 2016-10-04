@@ -15,7 +15,7 @@ public:
 	virtual ~j1Scene();
 
 	// Called before render is available
-	bool Awake();
+	bool Awake(pugi::xml_node&);
 
 	// Called before the first frame
 	bool Start();
@@ -34,6 +34,8 @@ public:
 
 	unsigned int volume;
 	p2SString MapInfo;
+	//p2SString map;
+	const char* map;
 private:
 	SDL_Texture* img;
 };

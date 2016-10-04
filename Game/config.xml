@@ -34,10 +34,11 @@
 
   <map>
     <folder>maps/</folder>
+    
   </map>
 
   <scene>
-
+    <map>hello.tmx</map>
   </scene>
 
   <file_system>

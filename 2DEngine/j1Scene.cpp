@@ -20,10 +20,16 @@ j1Scene::~j1Scene()
 {}
 
 // Called before render is available
-bool j1Scene::Awake()
+bool j1Scene::Awake(pugi::xml_node& node)
 {
 	LOG("Loading Scene");
 	bool ret = true;
+
+	pugi::xml_node name = node.child("map");
+
+	map = name.text().get();
+	//pugi::xml_node name = node.child("name");
+	//map.create(name.child_value());
 
 	return ret;
 }
@@ -31,10 +37,12 @@ bool j1Scene::Awake()
 // Called before the first frame
 bool j1Scene::Start()
 {
-	img = App->tex->Load("game_test/textures/test.png");
+	//img = App->tex->Load("game_test/textures/test.png");
 	//App->audio->PlayMusic("game_test/audio/music/music_sadpiano.ogg");
 	volume = App->audio->volume;
-	App->map->Load("hello.tmx");
+	//App->map->Load(map.GetString());
+	App->map->Load(map);
+	//App->map->Load("hello.tmx");
 	return true;
 }
 
@@ -90,7 +98,7 @@ bool j1Scene::Update(float dt)
 	}
 	App->map->Draw();
 
-	App->render->Blit(img, 300, 0);
+	//App->render->Blit(img, 300, 0);
 	
 	MapInfo.create("Map: %d x %d Tiles: %d x %d Tilesets: %d", App->map->MapData.width, App->map->MapData.height, App->map->MapData.tilewidth, App->map->MapData.tileheight, App->map->MapData.tilesets.count());
 	App->win->SetTitle(MapInfo.GetString());

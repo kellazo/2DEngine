@@ -50,7 +50,8 @@ void j1Map::Draw()
 	Layer* layer = MapData.layers.start->data;
 		
 
-	uint coordenate;
+	int coordenate;
+	iPoint posWorld;
 	while (tileset != NULL)
 	{
 	
@@ -63,7 +64,9 @@ void j1Map::Draw()
 				//be sure to ignore tiles of id == 0
 				if (coordenate > 0)
 				{
-					App->render->Blit(tileset->data->texture, 0, 0);
+					SDL_Rect tilesetposition = tileset->data->GetTileRect(coordenate);
+					posWorld = MapToWorld(x, y);
+					App->render->Blit(tileset->data->texture, posWorld.x, posWorld.y,&tilesetposition);
 				}
 				
 			}
@@ -399,8 +402,9 @@ bool j1Map::LoadTilesetImage(pugi::xml_node& tileset_node, TileSet* set)
 		{
 			set->tex_height = h;
 		}
-
+		//les tiles en width
 		set->num_tiles_width = set->tex_width / set->tilewidth;
+		//les tiles en height
 		set->num_tiles_height = set->tex_height / set->tileheight;
 	}
 	LOG("TMX: Finish loading image data tag....\n");
@@ -479,7 +483,7 @@ bool j1Map::LoadLayerData(pugi::xml_node& layer_node, Layer* set)
 			set->datainfo = new uint[size];
 
 			//Once the array is allocated, use memset to fill it with zeroes
-			memset(set->datainfo, 0, 4);
+			memset(set->datainfo, 0, size);
 			
 			// to read content
 			const char* string = data.text().get();
@@ -512,7 +516,11 @@ bool j1Map::LoadLayerData(pugi::xml_node& layer_node, Layer* set)
 							//LOG("%d", set->datainfo[i]);
 						}
 						else
+						{
 							LOG("Token is null");
+						}
+							
+
 					}
 				}
 				else
@@ -550,24 +558,42 @@ bool j1Map::LoadLayerData(pugi::xml_node& layer_node, Layer* set)
 SDL_Rect TileSet::GetTileRect(int id) const
 {
 	SDL_Rect position;
-	int relative_id = id - firstgid;
-	position.x;
-	position.y;
-	position.h = tex_height;
-	position.w = tex_width;
-
+	//firstgid sempre es 1, i el id es 0 en la primera iteració. Per tal de tenir el Id del tileset.
+	int idTileset = id - firstgid;
+	// ample de la imatge del tileset
+	position.w = tilewidth;
+	// alçada de la imatge del tileset
+	position.h = tileheight;
+	//The last one, modulo operator, represented by a percentage sign (%), gives the remainder of a division of two values. For example:
+	//x = 11 % 3;
+	//results in variable x containing the value 2, since dividing 11 by 3 results in 3, with a remainder of 2.
+	//We use this because we want our value of x to reset back to 0 at the start of each row, so we draw the respective tile on the far left :
 	
+	position.x = margin + (position.w + spacing) * (idTileset % num_tiles_width);
+	//As for y, we take the floor() of i / w(that is, we round that result down) because we only want y to increase once we have reached the end of each row and moved down one level :https://gamedevelopment.tutsplus.com/tutorials/an-introduction-to-creating-a-tile-map-engine--gamedev-10900
+	position.y = margin + (position.h + spacing) * (idTileset / num_tiles_width);
+
 
 	return position;
 }
-
+//“Create a method that translates x,y coordinates from map positions to world positions”
 iPoint j1Map::MapToWorld(int x, int y) const
 {
 	
 	iPoint worldPoint;
-
-	worldPoint.x = x;
-	worldPoint.y = y;
+	//You only really need the size of the tiles
+	if (MapData.mapOrientaton == ORTHOGONAL)
+	{
+		worldPoint.x = x * MapData.tilewidth;
+		worldPoint.y = y * MapData.tileheight;
+		
+	}
+	else
+	{
+		LOG("Unknown map type");
+		worldPoint.x = x; worldPoint.y = y;
+	}
+	
 
 	return worldPoint;;
 }
