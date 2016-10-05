@@ -28,4 +28,7 @@ Changelog:
 
 . Version 0.5
 - You can create orthogonal maps with Tiled software and can load into the engine. Just open config.xml and change the name hello.tmx for your map name.
+. Version 0.6
+- You can Load Isometric Maps
+- Add functions to know as ortogonal and isometric persepctive his tile MapToworld and WorldToMap
 
