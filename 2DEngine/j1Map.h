@@ -145,7 +145,7 @@ struct Map
 	//uint hexsidelength;
 	//uchar staggeraxis;
 	//uchar staggerindex;
-	//uchar backgroundcolor;
+	SDL_Color background_color;
 	uint nextobjectid;
 
 	//com que podem carregar mes dun tileset en el TMX i necesitem agafar la info que contenem. fem una llista de punters a l'estrucutra Tileset que conte tota la info parsejada
@@ -182,6 +182,7 @@ public:
 
 	//Create a method that translates x, y coordinates from map positions to world positions
 	iPoint MapToWorld(int x, int y) const;
+	iPoint WorldToMap(int x, int y) const;
 
 private:
 	//fill mapa data to variables mapdata

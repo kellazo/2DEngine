@@ -43,6 +43,8 @@ bool j1Scene::Start()
 	//App->map->Load(map.GetString());
 	App->map->Load(map);
 	//App->map->Load("hello.tmx");
+	//App->map->Load("iso.tmx");
+	
 	return true;
 }
 
@@ -99,10 +101,15 @@ bool j1Scene::Update(float dt)
 	App->map->Draw();
 
 	//App->render->Blit(img, 300, 0);
-	
-	MapInfo.create("Map: %d x %d Tiles: %d x %d Tilesets: %d", App->map->MapData.width, App->map->MapData.height, App->map->MapData.tilewidth, App->map->MapData.tileheight, App->map->MapData.tilesets.count());
+	iPoint mousepoint;
+	App->input->GetMousePosition(mousepoint.x,mousepoint.y);
+	int offsetcam_x = App->render->camera.x;
+	int offsetcam_y = App->render->camera.y;
+	iPoint map_coordinates = App->map->WorldToMap(mousepoint.x - offsetcam_x, mousepoint.y - offsetcam_y);
+
+	MapInfo.create("Map: %d x %d Tiles: %d x %d Tilesets: %d WorldToMapCoordinates in Tiles: %d,%d", App->map->MapData.width, App->map->MapData.height, App->map->MapData.tilewidth,
+	App->map->MapData.tileheight, App->map->MapData.tilesets.count(),map_coordinates.x, map_coordinates.y);
 	App->win->SetTitle(MapInfo.GetString());
-	
 	return true;
 }
 

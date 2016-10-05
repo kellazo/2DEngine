@@ -6,7 +6,7 @@
 #include "j1Textures.h"
 #include "j1Map.h"
 #include <math.h>
-
+#include <math.h>
 
 j1Map::j1Map() : j1Module(), map_loaded(false)
 {
@@ -52,6 +52,7 @@ void j1Map::Draw()
 
 	int coordenate;
 	iPoint posWorld;
+	iPoint posMap;
 	while (tileset != NULL)
 	{
 	
@@ -66,6 +67,7 @@ void j1Map::Draw()
 				{
 					SDL_Rect tilesetposition = tileset->data->GetTileRect(coordenate);
 					posWorld = MapToWorld(x, y);
+					//posMap = WorldToMap(x, y);
 					App->render->Blit(tileset->data->texture, posWorld.x, posWorld.y,&tilesetposition);
 				}
 				
@@ -212,8 +214,8 @@ bool j1Map::Load(const char* file_name)
 				LOG("Visible: %d", layerData->visible);
 				LOG("Offset X: %d", layerData->offsetx);
 				LOG("Offset Y: %d", layerData->offsety);
-				LOG("Width: %d", layerData->width);
-				LOG("Height: %d", layerData->height);
+				LOG("Tile Width: %d", layerData->width);
+				LOG("Tile Height: %d", layerData->height);
 				layer = layer->next;
 			}
 
@@ -246,8 +248,6 @@ bool j1Map::LoadMap()
 		MapData.tileheight = map.attribute("tileheight").as_uint();
 		MapData.tilewidth = map.attribute("tilewidth").as_uint();
 		MapData.version = map.attribute("version").as_float();
-
-		
 		orientation.create(map.attribute("orientation").as_string());
 		
 		if (orientation == "orthogonal")
@@ -303,6 +303,32 @@ bool j1Map::LoadMap()
 			MapData.mapOrderer = NOTHING;
 		}
 
+
+		p2SString bg_color(map.attribute("backgroundcolor").as_string());
+
+		MapData.background_color.r = 0;
+		MapData.background_color.g = 0;
+		MapData.background_color.b = 0;
+		MapData.background_color.a = 0;
+
+		if (bg_color.Length() > 0)
+		{
+			p2SString red, green, blue;
+			bg_color.SubString(1, 2, red);
+			bg_color.SubString(3, 4, green);
+			bg_color.SubString(5, 6, blue);
+
+			int v = 0;
+
+			sscanf_s(red.GetString(), "%x", &v);
+			if (v >= 0 && v <= 255) MapData.background_color.r = v;
+
+			sscanf_s(green.GetString(), "%x", &v);
+			if (v >= 0 && v <= 255) MapData.background_color.g = v;
+
+			sscanf_s(blue.GetString(), "%x", &v);
+			if (v >= 0 && v <= 255) MapData.background_color.b = v;
+		}
 			
 	}
 
@@ -352,6 +378,20 @@ bool j1Map::LoadTilesetData(pugi::xml_node& tileset_node, TileSet* set)
 	set->spacing = tileset_node.attribute("spacing").as_uint();
 	set->margin = tileset_node.attribute("margin").as_uint();
 	set->tilecount = tileset_node.attribute("tilecount").as_uint();
+
+	pugi::xml_node offset = tileset_node.child("tileoffset");
+
+	if (offset != NULL)
+	{
+		set->offset_x = offset.attribute("x").as_int();
+		set->offset_y = offset.attribute("y").as_int();
+	}
+	else
+	{
+		set->offset_x = 0;
+		set->offset_y = 0;
+	}
+
 
 	//si no haguessim fet servir punters sempre s'ens maxacaria i perdriem la informacio dels tileset que hi han al tmx. Nomes es guardaria l'ultim.
 	//TilesetData.firstgid = tileset.attribute("firstgid").as_uint(); //for identificate which tileset is, because we can load all tilesets that we want
@@ -415,7 +455,7 @@ bool j1Map::LoadLayer()
 {
 	bool ret = true;
 
-	for (pugi::xml_node layer = map_file.child("map").child("layer"); layer; layer = layer.next_sibling("layer"))
+	for (pugi::xml_node layer = map_file.child("map").child("layer"); layer && ret; layer = layer.next_sibling("layer"))
 	{
 		Layer* set = new Layer();
 
@@ -474,16 +514,16 @@ bool j1Map::LoadLayerData(pugi::xml_node& layer_node, Layer* set)
 
 		/*What will be the size of that array ? … how many do you have in the TMX
 		file ?*/
-		
+		uint size = MapData.width*MapData.height;
+
+		set->datainfo = new uint[size];
+
+		//Once the array is allocated, use memset to fill it with zeroes
+		memset(set->datainfo, 0, size);
 
 		if (type_encoding == "csv")
 		{
-			uint size = MapData.width*MapData.height;
-
-			set->datainfo = new uint[size];
-
-			//Once the array is allocated, use memset to fill it with zeroes
-			memset(set->datainfo, 0, size);
+			
 			
 			// to read content
 			const char* string = data.text().get();
@@ -538,17 +578,20 @@ bool j1Map::LoadLayerData(pugi::xml_node& layer_node, Layer* set)
 		}
 		else if (type_encoding == "undefined")
 		{
-			int i = 0;
-			for (data; data; data = data.next_sibling("data"))
-			{
-				set->datainfo[i++] = data.attribute("gid").as_int(0);
-			}
-			ret = true;
+			LOG("TMX: type_encoding is undefined....\n");
+			ret = false;
 		}
 		else
-			ret = false;
+		{
+			int i = 0;
+			for (pugi::xml_node tile = data.child("tile"); tile; tile = tile.next_sibling("tile"))
+			{
+				set->datainfo[i++] = tile.attribute("gid").as_int(0);
+			}
+			ret = true;
 
-
+		}
+			
 	}
 
 	LOG("TMX: Finish loading data tag inside node layer....\n");
@@ -588,6 +631,12 @@ iPoint j1Map::MapToWorld(int x, int y) const
 		worldPoint.y = y * MapData.tileheight;
 		
 	}
+	// Add isometric map to world coordinates
+	else if (MapData.mapOrientaton == ISOMETRIC)
+	{
+		worldPoint.x = (x - y) * (MapData.tilewidth * 0.5f);
+		worldPoint.y = (x + y) * (MapData.tileheight * 0.5f);
+	}
 	else
 	{
 		LOG("Unknown map type");
@@ -596,4 +645,33 @@ iPoint j1Map::MapToWorld(int x, int y) const
 	
 
 	return worldPoint;;
+}
+//(x and y ) are screen position values, there are coordenates of screen
+iPoint j1Map::WorldToMap(int x, int y) const
+{
+	iPoint mapPoint(0, 0);
+	// Add orthographic world to map coordinates It is just the inverse math from MapToWorld
+	if (MapData.mapOrientaton == ORTHOGONAL)
+	{
+		mapPoint.x = x / MapData.tilewidth;
+		mapPoint.y = y / MapData.tileheight;
+
+	}
+	// Add the case for isometric maps to WorldToMap(world to map coordinates)
+	else if (MapData.mapOrientaton == ISOMETRIC)
+	{
+		float half_width = MapData.tilewidth * 0.5f;
+		float half_height = MapData.tileheight * 0.5f;
+
+		mapPoint.x = int((x / half_width + y / half_height) / 2);
+		mapPoint.y = int((y / half_height - (x / half_width)) / 2);
+		
+	}
+	else
+	{
+		LOG("Unknown map type");
+		mapPoint.x = x; mapPoint.y = y;
+	}
+
+	return mapPoint;
 }
