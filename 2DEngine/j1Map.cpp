@@ -64,11 +64,17 @@ void j1Map::Draw()
 				coordenate = layer->Get(x, y);
 				//be sure to ignore tiles of id == 0
 				if (coordenate > 0)
-				{
-					SDL_Rect tilesetposition = tileset->data->GetTileRect(coordenate);
-					posWorld = MapToWorld(x, y);
-					//posMap = WorldToMap(x, y);
-					App->render->Blit(tileset->data->texture, posWorld.x, posWorld.y,&tilesetposition);
+				{	//which tileset belongs this cordenate?
+					TileSet* tilesetpng = GetTilesetFromTileId(coordenate);
+
+					if (tilesetpng != NULL)
+					{
+
+						SDL_Rect tilesetposition = tilesetpng->GetTileRect(coordenate);
+						posWorld = MapToWorld(x, y);
+						//posMap = WorldToMap(x, y);
+						App->render->Blit(tilesetpng->texture, posWorld.x, posWorld.y, &tilesetposition);
+					}
 				}
 				
 			}
@@ -644,7 +650,7 @@ iPoint j1Map::MapToWorld(int x, int y) const
 	}
 	
 
-	return worldPoint;;
+	return worldPoint;
 }
 //(x and y ) are screen position values, there are coordenates of screen
 iPoint j1Map::WorldToMap(int x, int y) const
@@ -674,4 +680,32 @@ iPoint j1Map::WorldToMap(int x, int y) const
 	}
 
 	return mapPoint;
+}
+
+//Which tileset belongs this tile?
+TileSet* j1Map::GetTilesetFromTileId(int id) const
+{
+	// Complete this method so we pick the right
+	// Tileset based on a tile id
+
+	//first iterate through the tilesets with lists
+	p2List_item<TileSet*>* tile = MapData.tilesets.start;
+	//this is the tileset that we want
+	TileSet* set = NULL;
+	while (tile)
+	{
+		if (id < tile->data->firstgid)
+		{
+			//LOG("tileset");
+			set = tile->prev->data;
+			//LOG("tilesettete");
+			break;
+		}
+		set = tile->data; //?
+		tile = tile->next;
+	}
+	
+	
+
+	return set;
 }

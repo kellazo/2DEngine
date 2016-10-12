@@ -197,6 +197,9 @@ private:
 	bool LoadLayer();
 	bool LoadLayerInfo(pugi::xml_node& layer_node, Layer* set);
 	bool LoadLayerData(pugi::xml_node& layer_node, Layer* set);
+
+	//Which tileset belong this tile?
+	TileSet* GetTilesetFromTileId(int id) const;
 	
 
 
