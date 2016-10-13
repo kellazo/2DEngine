@@ -58,7 +58,7 @@ void j1Map::Draw()
 	iPoint posWorld;
 	iPoint posMap;
 	//try to add custom properties to map
-	if (MapData.properties.GetValue("draw") != 0)
+	if (MapData.properties.GetValue("Nodraw") != 0)
 	{
 		while (tileset != NULL)
 		{
