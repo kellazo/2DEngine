@@ -31,19 +31,32 @@ bool j1Scene::Awake(pugi::xml_node& node)
 	//pugi::xml_node name = node.child("name");
 	//map.create(name.child_value());
 
+
+
+	rectangle = App->render->camera;
+
+	
+	App->win->GetWindowSize((uint&)rectangle.x, (uint&)rectangle.y);
+
+	rectangleverde = { 300,10,300,300 };
+
+	
+
 	return ret;
 }
 
 // Called before the first frame
 bool j1Scene::Start()
 {
-	//img = App->tex->Load("game_test/textures/test.png");
+	img = App->tex->Load("game_test/textures/test.png");
 	//App->audio->PlayMusic("game_test/audio/music/music_sadpiano.ogg");
 	volume = App->audio->volume;
 	//App->map->Load(map.GetString());
 	App->map->Load(map);
 	//App->map->Load("hello.tmx");
 	//App->map->Load("iso.tmx");
+
+
 	
 	return true;
 }
@@ -98,9 +111,15 @@ bool j1Scene::Update(float dt)
 		LOG("Scene: volume + pressed");
 		volume++;
 	}
-	App->map->Draw();
 
-	//App->render->Blit(img, 300, 0);
+	
+	
+	
+	
+	
+	
+
+
 	iPoint mousepoint;
 	App->input->GetMousePosition(mousepoint.x,mousepoint.y);
 	int offsetcam_x = App->render->camera.x;
@@ -110,6 +129,73 @@ bool j1Scene::Update(float dt)
 	MapInfo.create("Map: %d x %d Tiles: %d x %d Tilesets: %d WorldToMapCoordinates in Tiles: %d,%d", App->map->MapData.width, App->map->MapData.height, App->map->MapData.tilewidth,
 	App->map->MapData.tileheight, App->map->MapData.tilesets.count(),map_coordinates.x, map_coordinates.y);
 	App->win->SetTitle(MapInfo.GetString());
+
+
+
+
+
+	if (App->input->GetKey(SDL_SCANCODE_KP_8) == KEY_REPEAT)
+		rectangle.y -= 4;
+		
+	if (App->input->GetKey(SDL_SCANCODE_KP_2) == KEY_REPEAT)
+		rectangle.y += 4;
+		
+	if (App->input->GetKey(SDL_SCANCODE_KP_4) == KEY_REPEAT)
+		rectangle.x -= 4;
+		
+	if (App->input->GetKey(SDL_SCANCODE_KP_6) == KEY_REPEAT)
+		rectangle.x += 4;
+		
+	
+	
+
+	
+	
+
+
+	App->render->DrawQuad({ rectangleverde.x , rectangleverde.y, rectangleverde.w, rectangleverde.h }, 0, 255, 0, 255, true);
+	CreateQuad(rectangle.x, rectangle.y);
+
+	
+	int rect1Bottom = rectangle.y + rectangle.h;
+	int rect2Top = rectangleverde.x + rectangleverde.w;
+	int rect1Top = rectangle.x + rectangle.w;
+	int rect2Bottom = rectangleverde.y + rectangleverde.h;
+	int rect1Left = rectangle.x + rectangle.y;
+	int rect2Right = rectangleverde.w + rectangleverde.h;
+	int rect1Right = rectangle.w + rectangle.h;
+	int rect2Left = rectangleverde.x + rectangleverde.y;
+
+	int OutsideBottom = rect1Bottom < rect2Top;
+	int OutsideTop = rect1Top > rect2Bottom;
+	int OutsideLeft = rect1Left > rect2Right;
+	int OutsideRight = rect1Right < rect2Left;
+
+
+
+	
+
+
+	/*if (!OutsideBottom || !OutsideTop || !OutsideLeft || !OutsideRight)
+	{
+		LOG("NO DETECTADP");
+	}
+	else
+	{
+		LOG("DETECTED");
+		App->map->Draw();
+	}*/
+	
+
+	if ((rectangle.x < rect2Top) &&(rect1Top > rectangleverde.x) &&(rectangle.y < rect2Bottom) &&(rect1Bottom > rectangleverde.y))
+	{
+		LOG("DETECTED COLLISION");
+	}
+	else
+		LOG("NO COLLISION");
+
+
+
 	return true;
 }
 
@@ -130,4 +216,15 @@ bool j1Scene::CleanUp()
 	LOG("Freeing scene");
 
 	return true;
+}
+
+void j1Scene::CreateQuad(int x, int y) const
+{
+	//SDL_Rect cam = App->render->camera;
+
+	//cam.x = x;
+	//cam.y = y;
+	//App->win->GetWindowSize((uint&)cam.x, (uint&)cam.y);
+	
+	App->render->DrawQuad({ x / 4 , y / 4, App->render->camera.w / 2, App->render->camera.h / 2 }, 255, 0, 0, 255, false);
 }

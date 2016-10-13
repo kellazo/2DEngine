@@ -32,12 +32,19 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
+	void CreateQuad(int x, int y) const;
+
 	unsigned int volume;
 	p2SString MapInfo;
 	//p2SString map;
 	const char* map;
+
+
+	
 private:
 	SDL_Texture* img;
+	SDL_Rect rectangle;
+	SDL_Rect rectangleverde;
 };
 
 #endif // __j1SCENE_H__
