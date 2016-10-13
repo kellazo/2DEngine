@@ -8,8 +8,18 @@
 #include "j1Module.h"
 
 
+// ----------------------------------------------------
+struct Properties
+{
+	//  Create a generic structure to hold properties
 
 
+
+	//  Our custom properties should have one method
+	// to ask for the value of a custom property
+};
+
+// ----------------------------------------------------
 struct Layer
 {
 	/*name: The name of the layer.
@@ -200,6 +210,9 @@ private:
 
 	//Which tileset belong this tile?
 	TileSet* GetTilesetFromTileId(int id) const;
+
+	//fill all custom properties information properties tag
+	bool LoadProperties(pugi::xml_node& node, Properties& properties);
 	
 
 

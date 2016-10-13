@@ -47,38 +47,51 @@ void j1Map::Draw()
 	p2List_item<TileSet*>* tileset = MapData.tilesets.start;
 
 	//***????? punter a layer que apunta a la primera direccio de memoria de la llista de layers amb la info
-	Layer* layer = MapData.layers.start->data;
-		
+	//Layer* layer = MapData.layers.start->data;
+	
+	//Make sure we draw all the layers and not just the first one
+	p2List_item<Layer*>* layers = MapData.layers.start;
+	//creem punter buit per guardar la info de la llista de layers
+	Layer* layer = NULL;
 
 	int coordenate;
 	iPoint posWorld;
 	iPoint posMap;
+
 	while (tileset != NULL)
 	{
-	
-		
-		for (int y = 0; y < MapData.height; y++)
+		//iterem les layers
+		while (layers)
 		{
-			for (int x = 0; x < MapData.width; x++)
+			
+			for (int y = 0; y < MapData.height; y++)
 			{
-				coordenate = layer->Get(x, y);
-				//be sure to ignore tiles of id == 0
-				if (coordenate > 0)
-				{	//which tileset belongs this cordenate?
-					TileSet* tilesetpng = GetTilesetFromTileId(coordenate);
+				for (int x = 0; x < MapData.width; x++)
+				{
+					//iterem i guardem la info en la que esta al punter de layer
+					layer = layers->data;
+					coordenate = layer->Get(x, y);
+					//be sure to ignore tiles of id == 0
+					if (coordenate > 0)
+					{	//which tileset belongs this cordenate?
+						TileSet* tilesetpng = GetTilesetFromTileId(coordenate);
 
-					if (tilesetpng != NULL)
-					{
+						if (tilesetpng != NULL)
+						{
 
-						SDL_Rect tilesetposition = tilesetpng->GetTileRect(coordenate);
-						posWorld = MapToWorld(x, y);
-						//posMap = WorldToMap(x, y);
-						App->render->Blit(tilesetpng->texture, posWorld.x, posWorld.y, &tilesetposition);
+							SDL_Rect tilesetposition = tilesetpng->GetTileRect(coordenate);
+							posWorld = MapToWorld(x, y);
+							//posMap = WorldToMap(x, y);
+							App->render->Blit(tilesetpng->texture, posWorld.x, posWorld.y, &tilesetposition);
+						}
 					}
+
 				}
-				
 			}
+			// i passem al seguent node de la llista i aixins fins arribar al final
+			layers = layers->next;
 		}
+		
 		tileset = tileset->next;
 	}
 
@@ -708,4 +721,14 @@ TileSet* j1Map::GetTilesetFromTileId(int id) const
 	
 
 	return set;
+}
+
+// Load a group of properties from a node and fill a list with it
+bool j1Map::LoadProperties(pugi::xml_node& node, Properties& properties)
+{
+	bool ret = false;
+	//  Fill in the method to fill the custom properties from 
+	// an xml_node
+
+	return ret;
 }
