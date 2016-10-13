@@ -57,42 +57,55 @@ void j1Map::Draw()
 	int coordenate;
 	iPoint posWorld;
 	iPoint posMap;
-
-	while (tileset != NULL)
+	//try to add custom properties to map
+	if (MapData.properties.GetValue("draw") != 0)
 	{
-		//iterem les layers
-		while (layers)
+		while (tileset != NULL)
 		{
-			
-			for (int y = 0; y < MapData.height; y++)
+			//iterem les layers
+			while (layers)
 			{
-				for (int x = 0; x < MapData.width; x++)
+
+				//iterem i guardem la info en la que esta al punter de layer
+				layer = layers->data;
+
+				for (int y = 0; y < MapData.height; y++)
 				{
-					//iterem i guardem la info en la que esta al punter de layer
-					layer = layers->data;
-					coordenate = layer->Get(x, y);
-					//be sure to ignore tiles of id == 0
-					if (coordenate > 0)
-					{	//which tileset belongs this cordenate?
-						TileSet* tilesetpng = GetTilesetFromTileId(coordenate);
+					for (int x = 0; x < MapData.width; x++)
+					{
 
-						if (tilesetpng != NULL)
-						{
 
-							SDL_Rect tilesetposition = tilesetpng->GetTileRect(coordenate);
-							posWorld = MapToWorld(x, y);
-							//posMap = WorldToMap(x, y);
-							App->render->Blit(tilesetpng->texture, posWorld.x, posWorld.y, &tilesetposition);
+						coordenate = layer->Get(x, y);
+						//be sure to ignore tiles of id == 0
+						if (coordenate > 0)
+						{	//which tileset belongs this cordenate?
+							TileSet* tilesetpng = GetTilesetFromTileId(coordenate);
+
+							if (tilesetpng != NULL)
+							{
+
+								SDL_Rect tilesetposition = tilesetpng->GetTileRect(coordenate);
+								posWorld = MapToWorld(x, y);
+								//posMap = WorldToMap(x, y);
+
+								//Custom properties: Now use it to ask each layer if your “Draw” property is true.
+								if (layer->properties.GetValue("Nodraw") != 0)
+								{
+									//pintem
+									App->render->Blit(tilesetpng->texture, posWorld.x, posWorld.y, &tilesetposition);
+								}
+
+							}
 						}
-					}
 
+					}
 				}
+				// i passem al seguent node de la llista i aixins fins arribar al final
+				layers = layers->next;
 			}
-			// i passem al seguent node de la llista i aixins fins arribar al final
-			layers = layers->next;
+
+			tileset = tileset->next;
 		}
-		
-		tileset = tileset->next;
 	}
 
 
@@ -355,6 +368,8 @@ bool j1Map::LoadMap()
 			sscanf_s(blue.GetString(), "%x", &v);
 			if (v >= 0 && v <= 255) MapData.background_color.b = v;
 		}
+
+		LoadProperties(map, MapData.properties);
 			
 	}
 

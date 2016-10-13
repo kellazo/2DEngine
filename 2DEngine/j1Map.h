@@ -189,6 +189,8 @@ struct Map
 	//make sure all memory is deleted
 	p2List<Layer*>	layers;
 
+	Properties	properties;
+
 	//~Map() {} //destructor
 
 
