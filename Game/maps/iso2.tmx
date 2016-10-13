@@ -671,6 +671,10 @@
   </data>
  </layer>
  <layer name="Navigation" width="25" height="25">
+  <properties>
+   <property name="navigation" type="int" value="1"/>
+   <property name="walkable" type="int" value="0"/>
+  </properties>
   <data>
    <tile gid="26"/>
    <tile gid="26"/>

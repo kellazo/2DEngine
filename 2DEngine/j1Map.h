@@ -12,11 +12,32 @@
 struct Properties
 {
 	//  Create a generic structure to hold properties
+	struct Property
+	{
+		p2SString name;
+		int value;
+	};
 
+	~Properties()
+	{
+		p2List_item<Property*>* item;
+		item = properties.start;
+
+		while (item != NULL)
+		{
+			RELEASE(item->data);
+			item = item->next;
+		}
+
+		properties.clear();
+	}
 
 
 	//  Our custom properties should have one method
 	// to ask for the value of a custom property
+	int GetValue(const char* name, int default_value = 0) const;
+	p2List<Property*>	properties;
+	
 };
 
 // ----------------------------------------------------
@@ -48,6 +69,7 @@ struct Layer
 		return coordenate;
 	}
 
+	
 
 	//OPTION: to delete the memory for tile data, you could use a destructor in
 	//the layer struct
@@ -59,6 +81,8 @@ struct Layer
 		RELEASE(datainfo);
 	}
 
+	// Add the calls to this method so we load custom properties for each layer
+	Properties	properties;
 
 };
 
@@ -101,6 +125,7 @@ struct TileSet
 	int					offset_x;
 	int					offset_y;
 
+	
 
 	//~TileSet() {} //destructor
 };
@@ -165,6 +190,8 @@ struct Map
 	p2List<Layer*>	layers;
 
 	//~Map() {} //destructor
+
+
 };
 
 

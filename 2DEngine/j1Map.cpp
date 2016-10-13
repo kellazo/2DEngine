@@ -184,7 +184,14 @@ bool j1Map::Load(const char* file_name)
 			ret = LoadLayer();
 			LOG("TMX:...finished loading Layer information.\n");
 		}
-		
+
+		//load custom properties
+		if (ret == true)
+		{
+			LOG("TMX: Starting loading properties information....\n");
+			ret = LoadLayer();
+			LOG("TMX:...finished loading properties information.\n");
+		}
 
 		//  LOG all the data loaded
 		// iterate all tilesets and LOG everything
@@ -507,6 +514,9 @@ bool j1Map::LoadLayerInfo(pugi::xml_node& layer_node, Layer* set)
 	set->width = layer_node.attribute("width").as_uint();
 	set->height = layer_node.attribute("height").as_uint();
 
+	//Add the calls to this method so we load custom properties for each layer
+	LoadProperties(layer_node, set->properties);
+
 
 	LOG("TMX: Finish loading layer data tag....\n");
 	return ret;
@@ -724,11 +734,50 @@ TileSet* j1Map::GetTilesetFromTileId(int id) const
 }
 
 // Load a group of properties from a node and fill a list with it
-bool j1Map::LoadProperties(pugi::xml_node& node, Properties& properties)
+bool j1Map::LoadProperties(pugi::xml_node& property, Properties& properties)
 {
 	bool ret = false;
 	//  Fill in the method to fill the custom properties from 
 	// an xml_node
+	pugi::xml_node data = property.child("properties");
+
+	LOG("TMX: Starting loading properties tag....\n");
+
+	if (data != NULL)
+	{
+		pugi::xml_node prop;
+
+		for (prop = data.child("property"); prop; prop = prop.next_sibling("property"))
+		{
+			Properties::Property* p = new Properties::Property();
+			LOG("TMX: Starting loading property tag....\n");
+			p->name = prop.attribute("name").as_string();
+			p->value = prop.attribute("value").as_int();
+
+
+			properties.properties.add(p);
+			LOG("TMX: Finish loading property tag....\n");
+		}
+	}
+	
+
+
+	LOG("TMX: Finish loading properties tag....\n");
 
 	return ret;
+}
+
+// Add a method to custom properties struct.It should be to request any value. It must accept a default value in case it is not found(in the lines of pugui xml).
+int Properties::GetValue(const char* value, int default_value) const
+{
+	p2List_item<Property*>* item = properties.start;
+
+	while (item)
+	{
+		if (item->data->name == value)
+			return item->data->value;
+		item = item->next;
+	}
+
+	return default_value;
 }
