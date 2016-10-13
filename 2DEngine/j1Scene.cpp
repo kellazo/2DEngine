@@ -38,7 +38,7 @@ bool j1Scene::Awake(pugi::xml_node& node)
 	
 	App->win->GetWindowSize((uint&)rectangle.x, (uint&)rectangle.y);
 
-	rectangleverde = { 300,10,300,300 };
+	rectangleverde = { 0,0,700,550 };
 
 	
 
@@ -148,51 +148,48 @@ bool j1Scene::Update(float dt)
 		
 	
 	
-
+	App->map->Draw();
 	
 	
 
 
-	App->render->DrawQuad({ rectangleverde.x , rectangleverde.y, rectangleverde.w, rectangleverde.h }, 0, 255, 0, 255, true);
-	CreateQuad(rectangle.x, rectangle.y);
+	//App->render->DrawQuad({ rectangleverde.x , rectangleverde.y, rectangleverde.w, rectangleverde.h }, 0, 255, 0, 255, true);
+	//CreateQuad(rectangle.x, rectangle.y);
 
 	
-	int rect1Bottom = rectangle.y + rectangle.h;
-	int rect2Top = rectangleverde.x + rectangleverde.w;
-	int rect1Top = rectangle.x + rectangle.w;
-	int rect2Bottom = rectangleverde.y + rectangleverde.h;
-	int rect1Left = rectangle.x + rectangle.y;
-	int rect2Right = rectangleverde.w + rectangleverde.h;
-	int rect1Right = rectangle.w + rectangle.h;
-	int rect2Left = rectangleverde.x + rectangleverde.y;
+	//Collision(rectangle,rectangleverde);
 
-	int OutsideBottom = rect1Bottom < rect2Top;
-	int OutsideTop = rect1Top > rect2Bottom;
-	int OutsideLeft = rect1Left > rect2Right;
-	int OutsideRight = rect1Right < rect2Left;
+	//int rect1Bottom = rectangle.y/4 + rectangle.h/2;
+	//int rect2Top = rectangleverde.x + rectangleverde.w;
+	//int rect1Top = rectangle.x/4 + rectangle.w/2;
+	//int rect2Bottom = rectangleverde.y + rectangleverde.h;
+	//int rect1Left = rectangle.x/4 + rectangle.y/4;
+	//int rect2Right = rectangleverde.w + rectangleverde.h;
+	//int rect1Right = rectangle.w/2 + rectangle.h/2;
+	//int rect2Left = rectangleverde.x + rectangleverde.y;
 
+	//int OutsideBottom = rect1Bottom < rect2Top;
+	//int OutsideTop = rect1Top > rect2Bottom;
+	//int OutsideLeft = rect1Left > rect2Right;
+	//int OutsideRight = rect1Right < rect2Left;
 
+	///*if (!OutsideBottom || !OutsideTop || !OutsideLeft || !OutsideRight)
+	//{
+	//	LOG("NO DETECTADP");
+	//}
+	//else
+	//{
+	//	LOG("DETECTED");
+	//	App->map->Draw();
+	//}*/
+	//
 
-	
-
-
-	/*if (!OutsideBottom || !OutsideTop || !OutsideLeft || !OutsideRight)
-	{
-		LOG("NO DETECTADP");
-	}
-	else
-	{
-		LOG("DETECTED");
-		App->map->Draw();
-	}*/
-	
-
-	if ((rectangle.x < rect2Top) &&(rect1Top > rectangleverde.x) &&(rectangle.y < rect2Bottom) &&(rect1Bottom > rectangleverde.y))
-	{
-		LOG("DETECTED COLLISION");
-	}
-	else
-		LOG("NO COLLISION");
+	//if ((rectangle.x < rect2Top) &&(rect1Top > rectangleverde.x) && (rectangle.y < rect2Bottom) &&(rect1Bottom > rectangleverde.y))
+	//{
+	//	LOG("DETECTED COLLISION");
+	//}
+	//else
+	//	LOG("NO COLLISION");
 
 
 
@@ -227,4 +224,31 @@ void j1Scene::CreateQuad(int x, int y) const
 	//App->win->GetWindowSize((uint&)cam.x, (uint&)cam.y);
 	
 	App->render->DrawQuad({ x / 4 , y / 4, App->render->camera.w / 2, App->render->camera.h / 2 }, 255, 0, 0, 255, false);
+}
+
+
+
+
+//To keep the following code simple, I(naively) assume that sprite_2 is the same size or larger than sprite_1.
+//To make it detect cases where sprite_2 is smaller, run the same tests again but swap sprite_2 and sprite_1.
+bool j1Scene::Collision(SDL_Rect obj1, SDL_Rect obj2) {
+	bool ret = false;
+
+	//Let's examine the x axis first:
+	//If the leftmost or rightmost point of the first sprite lies somewhere inside the second, continue.
+	if ((obj1.x/4 >= obj2.x && obj1.x/4 <= (obj2.x + obj2.w)) ||
+		((obj1.x/4 + obj1.w/2) >= obj2.x/2 && (obj1.x/4 + obj1.w/2) <= (obj2.x + obj2.w))) {
+		//Now we look at the y axis:
+		if ((obj1.y/4 >= obj2.y && obj1.y/4 <= (obj2.y + obj2.h)) ||
+			((obj1.y/4 + obj1.h/2) >= obj2.y && (obj1.y/4 + obj1.h/2) <= (obj2.y + obj2.h))) {
+			//The sprites appear to overlap.
+
+			LOG("OVERLAPING");
+			App->map->Draw();
+			ret = true;
+		}
+	}
+	//The sprites do not overlap:
+	LOG("NO OVERLAPING");
+	return ret;
 }

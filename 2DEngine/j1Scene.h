@@ -33,6 +33,7 @@ public:
 	bool CleanUp();
 
 	void CreateQuad(int x, int y) const;
+	bool Collision(SDL_Rect obj1, SDL_Rect obj2);
 
 	unsigned int volume;
 	p2SString MapInfo;
