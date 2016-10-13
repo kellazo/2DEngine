@@ -33,3 +33,7 @@ Changelog:
 - You can Load Isometric Maps
 - Add functions to know as ortogonal and isometric persepctive his tile MapToworld and WorldToMap
 
+. Version 0.7
+- Added navigation mesh(logic layer) Map navigation
+- All layers drawn using multiple tilesets
+- Metadata loaded(custom properties)
